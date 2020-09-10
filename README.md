@@ -1,2 +1,3 @@
 # Embedded
-This is the project of embedded systems - blBAABD
+
+This is the project of embedded systems
