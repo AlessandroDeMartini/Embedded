@@ -22,14 +22,15 @@ procedure ProducerConsumer_Prot is
    		G : Generator;
 
    -- Buffer definition
-   Size: constant Integer := 3;
+    CB: CircularBuffer;
+    Size: constant Integer := 3;
   	subtype Item is Integer;
 
  	type Index is mod Size;
 	package Index_IO is 
 		new Ada.Text_IO.Modular_IO (Index);
 
-   type Item_Array is array(Index) of Item;
+   	type Item_Array is array(Index) of Item;
 	A: Item_Array;
 
    In_Ptr, Out_Ptr, Count: Index := 0;
@@ -43,19 +44,19 @@ procedure ProducerConsumer_Prot is
    begin
       Next := Clock;
 
-      Put("First value of type Index_IO: ");
-   	Index_IO.Put(Index'First, 1);
-	   Put_Line(" ");
+      	Put("First value of type Index_IO: ");
+   		Index_IO.Put(Index'First, 1);
+	   	Put_Line(" ");
    
-	   Put("Last value of type Index_IO: ");	
-	   Index_IO.Put(Index'Last, 1);
-	   Put_Line(" ");
+	   	Put("Last value of type Index_IO: ");	
+	   	Index_IO.Put(Index'Last, 1);
+	   	Put_Line(" ");
 
       for I in 1..N loop
 			
          -- ==> Complete code: Write to Buffer
          
-         Buffer.A.Put(I);
+       	 CB.Put(I);
          Put_Line(Standard.Integer'Image(I));		
  	
          -- Next 'Release' in 50..250ms
@@ -73,7 +74,8 @@ procedure ProducerConsumer_Prot is
          -- Read from X
 			
          -- ==> Complete code: Read from Buffer
-		L := 1;	
+        CB.Get(X);
+		
 		-- Put_Line(Standard.Integer'Image(I));	
 
          --Put_Line(Integer'Image(X));
@@ -83,8 +85,8 @@ procedure ProducerConsumer_Prot is
    end;
 	
 	-- Parallelize the work between different producer/costumer
-	P: array (Integer range 1..2) of Producer;
-	C: array (Integer range 1..1) of Consumer;
+	P: array (Integer range 1..X) of Producer;
+	C: array (Integer range 1..X) of Consumer;
 	
 begin -- main task
    null;
