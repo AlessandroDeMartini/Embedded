@@ -7,6 +7,8 @@ package body Semaphores is
       entry Wait -- To be completed
 
       entry Signal -- To be completed
+
+
    end CountingSemaphore;
 end Semaphores;
 
