@@ -32,24 +32,6 @@ procedure ProducerConsumer_Sem is
 	--    2. Semaphore 'NotEmpty' to indicate that buffer is not empty
 	--    3. Semaphore 'AtomicAccess' to ensure an atomic access to the buffer
 	
-	task type NotFull;
-
-	task type NotEmpty;
-
-	task type AtomicAccess;
-
-	task body NotFull is
-
-	end;
-
-	task body NotEmpty is
-
-	end;
-
-	task body AtomicAccess is
-
-	end;
-	
    task type Producer;
 
    task type Consumer;
