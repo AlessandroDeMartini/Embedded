@@ -26,8 +26,8 @@ procedure ProducerConsumer_Sem is
    package Random_Delay is new Ada.Numerics.Discrete_Random (Delay_Interval);
    use Random_Delay;
    G : Generator;
-	
-   -- => Complete code: Declation of Semaphores
+
+-- => Complete code: Declation of Semaphores
 	--    1. Semaphore 'NotFull' to indicate that buffer is not full
 	--    2. Semaphore 'NotEmpty' to indicate that buffer is not empty
 	--    3. Semaphore 'AtomicAccess' to ensure an atomic access to the buffer
