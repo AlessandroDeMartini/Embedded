@@ -22,27 +22,40 @@ procedure ProducerConsumer_Prot is
    		G : Generator;
 
    -- Buffer definition
-   		Size: constant Integer := 3;
-   		subtype Item is Integer;
-  		type Index is mod Size;
-   		type Item_Array is array(Index) of Item;
-   		A: Item_Array;
-   		In_Ptr, Out_Ptr: Index := 0;
-   		Count: Integer range 0..Size := 0;
+   Size: constant Integer := 3;
+  	subtype Item is Integer;
+
+ 	type Index is mod Size;
+	package Index_IO is 
+		new Ada.Text_IO.Modular_IO (Index);
+
+   type Item_Array is array(Index) of Item;
+	A: Item_Array;
+
+   In_Ptr, Out_Ptr, Count: Index := 0;
 
    task type Producer;
 
    task type Consumer;
-
+   
    task body Producer is
       Next : Time;
    begin
       Next := Clock;
+
+      Put("First value of type Index_IO: ");
+   	Index_IO.Put(Index'First, 1);
+	   Put_Line(" ");
+   
+	   Put("Last value of type Index_IO: ");	
+	   Index_IO.Put(Index'Last, 1);
+	   Put_Line(" ");
+
       for I in 1..N loop
 			
          -- ==> Complete code: Write to Buffer
-         -- A.Put(I);
-		
+         
+         Buffer.A.Put(I);
          Put_Line(Standard.Integer'Image(I));		
  	
          -- Next 'Release' in 50..250ms
