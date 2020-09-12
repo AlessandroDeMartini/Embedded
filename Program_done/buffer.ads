@@ -1,4 +1,5 @@
 package Buffer is
+
    Size: constant Integer := 3;
    subtype Item is Integer;
    type Index is mod Size;
@@ -12,5 +13,6 @@ package Buffer is
       In_Ptr, Out_Ptr: Index := 0;
       Count: Integer range 0..Size := 0;
    end CircularBuffer;
+
 end Buffer;
 

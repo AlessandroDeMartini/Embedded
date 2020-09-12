@@ -1,7 +1,8 @@
 package body Buffer is
-   body CircularBuffer is
+   
+	protected body CircularBuffer is
 
-      entry Put(X: Item) when Count < Size is
+      entry Put(X: in Item) when Count < Size is
       begin
          A(In_Ptr) := X;
          In_Ptr := In_Ptr + 1;
@@ -14,5 +15,7 @@ package body Buffer is
          Out_Ptr := Out_Ptr + 1;
          Count := Count - 1;
       end Get;
+
    end CircularBuffer;
+
 end Buffer;
