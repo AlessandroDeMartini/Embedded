@@ -1,5 +1,5 @@
 package body Buffer is
-   body CircularBuffer is
+   protected body CircularBuffer is
 
       entry Put(X: Item) when Count < Size is
       begin
