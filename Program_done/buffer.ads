@@ -16,3 +16,7 @@ package Buffer is
 
 end Buffer;
 
+-- buffer have size 3 because each producer need to enter 1 process
+-- it contain integer value
+-- index is a integer positive (modular) value that goes from 0 to n-1 size
+-- A is an item array
