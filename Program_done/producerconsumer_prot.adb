@@ -21,9 +21,9 @@ procedure ProducerConsumer_Prot is
    	G : Generator;
 
    	-- Buffer definition
-    CB: CircularBuffer;
-    Size: constant Integer := 3;
-  	subtype Item is Integer;
+    CB: CircularBuffer; --definition of a name for the circular buffer
+    Size: constant Integer := 3; -- size of 3 so that all producer insert 1 
+  	subtype Item is Integer; -- all the rest of the definition of the buffer
 
  	type Index is mod Size;
 	package Index_IO is 
@@ -39,10 +39,9 @@ procedure ProducerConsumer_Prot is
    	task type Consumer;
    
    	task body Producer is
-      	Next : Time;
+    	Next : Time; -- define next as a time
    	begin
-   	
-      	Next := Clock;
+    	Next := Clock; -- assign at the time next the value clock that will be implemented later
 
 		Put("First value of type Index_IO: ");
    		Index_IO.Put(Index'First, 1);
@@ -56,14 +55,14 @@ procedure ProducerConsumer_Prot is
 			
         	-- ==> Complete code: Write to Buffer
          
-       	 	CB.Put(I);
-         	Put_Line(Standard.Integer'Image(I));		
- 	
+       	 	CB.Put(I); -- write on the buffer CB inserting the value I
+         	Put_Line(Standard.Integer'Image(I)); 
+	 	
          	-- Next 'Release' in 50..250ms
          	Next := Next + Milliseconds(Random(G));
          	delay until Next;
       	end loop;
-   end;
+	end;
 
    task body Consumer is
       Next : Time;
@@ -74,18 +73,18 @@ procedure ProducerConsumer_Prot is
          -- Read from X
 			
          -- ==> Complete code: Read from Buffer
-        CB.Get(X);
+        CB.Get(X); -- read on the buffer CB on the value I
 		
 		-- Put_Line(Standard.Integer'Image(I));	
 
-         --Put_Line(Integer'Image(X));
-         --Next := Next + Milliseconds(Random(G));
-         --delay until Next;
+        --Put_Line(Integer'Image(X));
+        --Next := Next + Milliseconds(Random(G));
+        --delay until Next;
       end loop;
    end;
 	
 	-- Parallelize the work between different producer/costumer
-	P: array (Integer range 1..X) of Producer;
+	P: array (Integer range 1..X) of Producer; -- both P and C have to run X time so the number of producer
 	C: array (Integer range 1..X) of Consumer;
 	
 begin -- main task
