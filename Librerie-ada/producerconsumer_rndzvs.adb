@@ -8,7 +8,7 @@ with Ada.Numerics.Discrete_Random;
 
 procedure ProducerConsumer_Rndzvs is
 	
-   N : constant Integer := 10; -- Number of produced and consumed tokens per task
+	N : constant Integer := 10; -- Number of produced and consumed tokens per task
 	X : constant Integer := 3; -- Number of producers and consumers	
 	
    -- Random Delays
@@ -35,19 +35,11 @@ procedure ProducerConsumer_Rndzvs is
    begin
       loop
          select
-		accept Append(I : in Integer) when Count < Size do		-- => Complete Code: Service Append
-			B(In_Ptr) := X;
-         		In_Ptr    := In_Ptr + 1;
-         		Count     := Count + 1;
-		end Append;
+				-- => Complete Code: Service Append
          or
-		accept Take(I : out Integer) when Count > 0 do		-- => Complete Code: Service Take
-			X := B(Out_Ptr);
-        		Out_Ptr := Out_Ptr + 1;
-         		Count := Count - 1;
-		end Take;
+				-- => Complete Code: Service Take
          or
-		terminate;		-- => Termination
+				-- => Termination
          end select;
       end loop;
    end Buffer;
@@ -58,8 +50,7 @@ procedure ProducerConsumer_Rndzvs is
       Next := Clock;
       for I in 1..N loop
 			
-        B.Append(I);  -- => Complete code: Write to X
-	Put_Line("Producer giving: " &I'Img);
+         -- => Complete code: Write to X
 
          -- Next 'Release' in 50..250ms
          Next := Next + Milliseconds(Random(G));
@@ -73,9 +64,9 @@ procedure ProducerConsumer_Rndzvs is
    begin
       Next := Clock;
       for I in 1..N loop
-        B.Take(X);  -- Complete Code: Read from X
-	Put_Line("Consumer giving: " &X'Img);
+         -- Complete Code: Read from X
 
+         Put_Line(Integer'Image(X));
          Next := Next + Milliseconds(Random(G));
          delay until Next;
       end loop;
