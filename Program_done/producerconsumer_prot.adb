@@ -13,38 +13,38 @@ procedure ProducerConsumer_Prot is
 
    	N : constant Integer := 10; -- Number of produced and consumed tokens per task
    	X : constant Integer := 3; -- Number of producers and consumers
-	L : Integer;
 
 	-- Random Delays
-   subtype Delay_Interval is Integer range 50..250;
-   		package Random_Delay is new Ada.Numerics.Discrete_Random (Delay_Interval);
-   		use Random_Delay;
-   		G : Generator;
+   	subtype Delay_Interval is Integer range 50..250;
+   	package Random_Delay is new Ada.Numerics.Discrete_Random (Delay_Interval);
+   	use Random_Delay;
+   	G : Generator;
 
-   -- Buffer definition
+   	-- Buffer definition
     CB: CircularBuffer;
     Size: constant Integer := 3;
   	subtype Item is Integer;
 
  	type Index is mod Size;
 	package Index_IO is 
-		new Ada.Text_IO.Modular_IO (Index);
+	new Ada.Text_IO.Modular_IO (Index);
 
    	type Item_Array is array(Index) of Item;
 	A: Item_Array;
 
-   In_Ptr, Out_Ptr, Count: Index := 0;
+   	In_Ptr, Out_Ptr, Count: Index := 0;
 
-   task type Producer;
+   	task type Producer;
 
-   task type Consumer;
+   	task type Consumer;
    
-   task body Producer is
-      Next : Time;
-   begin
-      Next := Clock;
+   	task body Producer is
+      	Next : Time;
+   	begin
+   	
+      	Next := Clock;
 
-      	Put("First value of type Index_IO: ");
+		Put("First value of type Index_IO: ");
    		Index_IO.Put(Index'First, 1);
 	   	Put_Line(" ");
    
@@ -52,17 +52,17 @@ procedure ProducerConsumer_Prot is
 	   	Index_IO.Put(Index'Last, 1);
 	   	Put_Line(" ");
 
-      for I in 1..N loop
+		for I in 1..N loop
 			
-         -- ==> Complete code: Write to Buffer
+        	-- ==> Complete code: Write to Buffer
          
-       	 CB.Put(I);
-         Put_Line(Standard.Integer'Image(I));		
+       	 	CB.Put(I);
+         	Put_Line(Standard.Integer'Image(I));		
  	
-         -- Next 'Release' in 50..250ms
-         Next := Next + Milliseconds(Random(G));
-         delay until Next;
-      end loop;
+         	-- Next 'Release' in 50..250ms
+         	Next := Next + Milliseconds(Random(G));
+         	delay until Next;
+      	end loop;
    end;
 
    task body Consumer is
