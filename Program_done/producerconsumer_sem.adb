@@ -11,18 +11,17 @@ use Semaphores;
 
 procedure ProducerConsumer_Sem is
 	
-	N : constant Integer := 10; -- Number of produced and consumed tokens per task
-	X : constant Integer := 3;  -- Number of producers and consumer
-	
-	S: CountingSemaphore(1,1);
-	
-	
+	N : constant Integer := 10;                     -- Number of produced and consumed tokens per task
+	X : constant Integer := 3;                      -- Number of producers and consumer
+
 	-- Buffer Definition
-	Size: constant Integer := 3;
-	type Index is mod Size;
-	type Item_Array is array(Index) of Integer;
-	B : Item_Array;
-	In_Ptr, Out_Ptr, Count : Index := 0;
+	Size: constant Integer := 3;                    -- Buffer size
+	type Index is mod Size;                         -- index indicate a modular type
+	type Item_Array is array(Index) of Integer;     -- item array indicate a type like the buffer one
+	B : Item_Array;                                 -- Buffer definition
+	In_Ptr, Out_Ptr, Count : Index := 0;            -- In_Ptr  -> position where write, 
+													-- Out_Ptr -> position where read, 
+													-- Count   -> elements in the buffer
 
 	-- Random Delays
 	subtype Delay_Interval is Integer range 50..250;
@@ -53,7 +52,7 @@ procedure ProducerConsumer_Sem is
 			NotEmpty.Signal;          -- Since I'm in the produces I fell empty spaces
 			AtomicAccess.Wait;        -- I can do just one operation at a time
 			
-			-- Write on on the buffer
+			-- Write in the buffer
 			B(In_Ptr) := I;           -- I write Buffer position In_Ptr the Operation number I
          	In_Ptr    := In_Ptr + 1;  -- Incrementation, feel the next buffer space
 			
@@ -71,7 +70,7 @@ procedure ProducerConsumer_Sem is
 
 	task body Consumer is
 	    Next : Time;
-		R : Integer;  -- Variable used to read from the buffer
+		R    : Integer;  -- Variable used to read from the buffer
 	begin
 	Next := Clock;
     	for I in 1..N loop
