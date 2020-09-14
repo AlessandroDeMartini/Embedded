@@ -13,10 +13,7 @@ procedure ProducerConsumer_Sem is
 	
 	N : constant Integer := 10; -- Number of produced and consumed tokens per task
 	X : constant Integer := 3;  -- Number of producers and consumer
-	
-	S: CountingSemaphore(1,1);
-	
-	
+
 	-- Buffer Definition
 	Size: constant Integer := 3;
 	type Index is mod Size;
@@ -50,7 +47,6 @@ procedure ProducerConsumer_Sem is
 		for I in 1..N loop
       		
 			NotFull.Wait;             -- I can access the buffer if it is not full
-			NotEmpty.Signal;          -- Since I'm in the produces I fell empty spaces
 			AtomicAccess.Wait;        -- I can do just one operation at a time
 			
 			-- Write on on the buffer
@@ -58,6 +54,7 @@ procedure ProducerConsumer_Sem is
          	In_Ptr    := In_Ptr + 1;  -- Incrementation, feel the next buffer space
 			
 			AtomicAccess.Signal;      -- Once I wrote in the buffer I can do another operation		
+			NotEmpty.Signal;          -- Since I'm in the produces I fell empty spaces
 
 			Put_Line("Produce giving: "&I'Img); 
       		     		
@@ -76,7 +73,6 @@ procedure ProducerConsumer_Sem is
 	Next := Clock;
     	for I in 1..N loop
  
-			NotFull.Signal;         -- If I read from the buffer I let free one buffer spot 
 			NotEmpty.Wait;          -- I can read from the buffer if it is not Empty
 			AtomicAccess.Wait;      -- Since I'm doing an operation I have to ask permition
 			
@@ -85,7 +81,8 @@ procedure ProducerConsumer_Sem is
          	Out_Ptr := Out_Ptr + 1; -- Out_Ptr incrementation, I need to watch the next element (Out_ptr is a modular)
 
 			AtomicAccess.Signal;    -- Once I do the operation I done, another can acess the buffer
-		
+			NotFull.Signal;         -- If I read from the buffer I let free one buffer spot 
+
 			Put_Line("Produce taking: "&R'Img); 
 
 			-- Next 'Release' in 50..250ms
