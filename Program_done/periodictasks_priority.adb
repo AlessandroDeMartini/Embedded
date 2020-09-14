@@ -11,7 +11,7 @@ procedure PeriodicTasks_Priority is
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
 	
    	Start : Time;                          -- Start Time of the System
-	Calibrator: constant Integer   := 700; -- Calibration for correct timing
+	Calibrator: constant Integer   := 600; -- Calibration for correct timing
 	                                       -- ==> Change parameter for your architecture!
 	Warm_Up_Time: constant Integer := 100; -- Warmup time in milliseconds
 	
@@ -24,6 +24,51 @@ procedure PeriodicTasks_Priority is
 		return Float(SC) + Time_Unit * Float(Frac/Time_Span_Unit);
    	end To_Float;
 	
+	task Watchdog is
+      entry start;
+      entry stop;
+   	end Watchdog;
+
+	-- Watchdog function 
+
+	procedure main is
+   	Message                         : constant String := "Cyclic scheduler with watchdog";
+   	d                               : Duration := 0.5;
+   	Start_Time                      : Time := Clock;
+   	next_time                       : Time:= start_time + d;
+   	c                               : Integer := 0;
+   	s                               : Integer := 0;
+
+   	task body Watchdog is
+      	watch_dog_next_time          : Time;
+      	watch_dog_delay              : duration:=0.5;
+      	type status_type       is (start,stop);
+      	status                       : status_type;
+   	begin
+      	loop       -- add your task code inside this loop
+         	select
+            	accept start do
+               		watch_dog_next_time := Clock;
+               		status              := start;
+            	end start;
+         	or
+            	accept stop do
+               		status              := stop;    
+            	end stop;
+         or
+
+            Delay until watch_dog_next_time + watch_dog_delay;
+            watch_dog_next_time:=watch_dog_next_time + watch_dog_delay;
+            
+			if status = start then
+               put_line("problem");
+            end if ;
+
+         end select;
+    
+      end loop;
+   end Watchdog;
+
 	-- Function F is a dummy function that is used to model a running user program.
 
 	function F(N : Integer) return Integer;
@@ -102,24 +147,39 @@ procedure PeriodicTasks_Priority is
 				Put(" violates Deadline!");
 			end if;
          	
+			if c = s then
+      			c := c+2;
+      			Watchdog.start;
+      			Watchdog.stop;
+
+      			-- delay until next_time;
+      			-- next_time:= next_time + d;
+				  
+      		end if;
+
+      		c:=c-1;
+
 			Put_Line("");
 			Release := Next;
          	delay until Release;
-      	end loop;
+
+
    	end T;
 
    	-- Running Tasks
 	-- NOTE: All tasks should have a minimum phase, so that they have the same time base!
 	
-   	Task_1 : T(1, 1, Warm_Up_Time, 300, 100, 300); 	-- ID: 1
+	-- Task_1 : T(1, 1, Warm_Up_Time, 300, 100, 300); -- Exempiooo
+
+   	Task_1 : T(1, 30, Warm_Up_Time, 300, 100, 300); 	-- ID: 1
 	                                            	-- Priority: 20
                                                     -- Phase: Warm_Up_Time (100)
 	                                                -- Period 300, 
 	                                                -- Computation Time: 100 (if correctly calibrated) 
 	                                                -- Relative Deadline: 300
-	Task_2 : T(2, 2, Warm_Up_Time, 400, 100, 400);
-	Task_3 : T(3, 3, Warm_Up_Time, 600, 100, 600);
-
+	Task_2 : T(2, 20, Warm_Up_Time, 400, 100, 400);
+	Task_3 : T(3, 10, Warm_Up_Time, 600, 100, 600);
+	Task_3 : T(3, 1, Warm_Up_Time, 1200, 200, 1200);
 
 -- Main Program: Terminates after measuring start time	
 begin
