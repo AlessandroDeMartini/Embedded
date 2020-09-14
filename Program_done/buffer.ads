@@ -1,7 +1,8 @@
 package Buffer is
 
-   Size: constant Integer := 3;
-   subtype Item is Integer;
+   Size: constant Integer := 3; -- size of 3 so that all producer insert 1 
+   subtype Item is Integer;     -- all the rest of the definition of the buffer
+
    type Index is mod Size;
    type Item_Array is array(Index) of Item;
 

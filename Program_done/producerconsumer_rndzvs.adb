@@ -9,21 +9,21 @@ with Ada.Numerics.Discrete_Random;
 procedure ProducerConsumer_Rndzvs is
 	
    N : constant Integer := 10; -- Number of produced and consumed tokens per task
-	X : constant Integer := 3; -- Number of producers and consumers	
-	
+	X : constant Integer := 3;  -- Number of producers and consumers	
+
    -- Random Delays
    subtype Delay_Interval is Integer range 50..250;
    package Random_Delay is new Ada.Numerics.Discrete_Random (Delay_Interval);
    use Random_Delay;
    G : Generator;
 
-   task Buffer is
+
+   task type Buffer is
       entry Append(I : in Integer);
       entry Take(I : out Integer);
    end Buffer;
 
    task type Producer;
-
    task type Consumer;
    
    task body Buffer is
@@ -35,31 +35,42 @@ procedure ProducerConsumer_Rndzvs is
    begin
       loop
          select
-		accept Append(I : in Integer) when Count < Size do		-- => Complete Code: Service Append
-			B(In_Ptr) := X;
-         		In_Ptr    := In_Ptr + 1;
-         		Count     := Count + 1;
-		end Append;
+		      when Integer(Count)+1 < Size =>               
+               accept Append(I : in Integer)  do	-- => Complete Code: Service Append
+
+			         B(In_Ptr) := I;
+         		   In_Ptr    := In_Ptr + 1;
+         		   Count     := Count + 1;
+                  Put_Line("Append: " &I'Img);
+                  Put_Line("Count:  " &Count'Img);
+		      end Append;
          or
-		accept Take(I : out Integer) when Count > 0 do		-- => Complete Code: Service Take
-			X := B(Out_Ptr);
-        		Out_Ptr := Out_Ptr + 1;
-         		Count := Count - 1;
-		end Take;
+            when Integer(Count) > 0 =>
+		         accept Take(I : out Integer)  do		-- => Complete Code: Service Take
+			         I       := B(Out_Ptr);
+        		      Out_Ptr := Out_Ptr + 1;
+                  Count   := Count - 1;
+                  Put_Line("Take:   " &I'Img);
+                  Put_Line("Count:  " &Count'Img);
+                  
+		         end Take;
          or
-		terminate;		-- => Termination
+		      terminate;                             -- => Termination
          end select;
       end loop;
    end Buffer;
       
+   A : Buffer;
+
    task body Producer is
       Next : Time;
    begin
       Next := Clock;
       for I in 1..N loop
 			
-        B.Append(I);  -- => Complete code: Write to X
-	Put_Line("Producer giving: " &I'Img);
+         -- Write to X
+         A.Append(I);
+	      --Put_Line("Producer giving: " &I'Img);
 
          -- Next 'Release' in 50..250ms
          Next := Next + Milliseconds(Random(G));
@@ -69,13 +80,15 @@ procedure ProducerConsumer_Rndzvs is
 
    task body Consumer is
       Next : Time;
-      X : Integer;
+      R    : Integer;
    begin
       Next := Clock;
       for I in 1..N loop
-        B.Take(X);  -- Complete Code: Read from X
-	Put_Line("Consumer giving: " &X'Img);
-
+         
+         -- Read from X
+         A.Take(R);
+	     -- Put_Line("Consumer taking: " &R'Img);
+  
          Next := Next + Milliseconds(Random(G));
          delay until Next;
       end loop;
