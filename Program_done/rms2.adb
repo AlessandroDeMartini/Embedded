@@ -46,6 +46,10 @@ procedure Rms2 is
    	task type T(Id: Integer; Prio: Integer; Phase: Integer; Period : Integer; 
 				Computation_Time : Integer; Relative_Deadline: Integer) is
       	pragma Priority(Prio); -- A higher number gives a higher priority
+
+		--pragma Priority_Specific_Dispatching(FIFO_Within_Priorities, 2, 30);
+		--pragma Priority_Specific_Dispatching(Round_Robin_Within_Priorities, 1, 1);
+
    	end;
 
    	task body T is
