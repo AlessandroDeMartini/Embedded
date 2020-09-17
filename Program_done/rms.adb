@@ -5,13 +5,13 @@ with Ada.Float_Text_IO;
 
 with Ada.Real_Time; use Ada.Real_Time;
 
-procedure rms is
+procedure Rms is
 
    	package Duration_IO is new Ada.Text_IO.Fixed_IO(Duration);
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
 	
    	Start : Time;                          -- Start Time of the System
-	Calibrator: constant Integer   := 750; -- Calibration for correct timing
+	Calibrator: constant Integer   := 650; -- Calibration for correct timing
 	                                       -- ==> Change parameter for your architecture!
 	Warm_Up_Time: constant Integer := 100; -- Warmup time in milliseconds
 	
@@ -46,6 +46,10 @@ procedure rms is
    	task type T(Id: Integer; Prio: Integer; Phase: Integer; Period : Integer; 
 				Computation_Time : Integer; Relative_Deadline: Integer) is
       	pragma Priority(Prio); -- A higher number gives a higher priority
+
+		--pragma Priority_Specific_Dispatching(FIFO_Within_Priorities, 2, 30);
+		--pragma Priority_Specific_Dispatching(Round_Robin_Within_Priorities, 1, 1);
+
    	end;
 
    	task body T is
@@ -128,4 +132,4 @@ procedure rms is
 begin
    Start := Clock; -- Central Start Time
    null;
-end rms;
+end Rms;

@@ -1,0 +1,103 @@
+Watchdog Task 1-2-3, calibration = 650
+
+Task 1- Release:  0.100, Completion:  0.182, Response: 0.082, WCRT: 0.082, Next Release:  0.400
+Task 2- Release:  0.100, Completion:  0.259, Response: 0.159, WCRT: 0.159, Next Release:  0.500
+Task 3- Release:  0.100, Completion:  0.335, Response: 0.235, WCRT: 0.235, Next Release:  0.700
+Task 1- Release:  0.400, Completion:  0.479, Response: 0.079, WCRT: 0.082, Next Release:  0.700
+Task 2- Release:  0.500, Completion:  0.579, Response: 0.079, WCRT: 0.159, Next Release:  0.900
+Task 1- Release:  0.700, Completion:  0.776, Response: 0.076, WCRT: 0.082, Next Release:  1.000
+Task 3- Release:  0.700, Completion:  0.853, Response: 0.153, WCRT: 0.235, Next Release:  1.300
+Task 2- Release:  0.900, Completion:  0.978, Response: 0.078, WCRT: 0.159, Next Release:  1.300
+Task 1- Release:  1.000, Completion:  1.077, Response: 0.077, WCRT: 0.082, Next Release:  1.300
+Ok
+Task 1- Release:  1.300, Completion:  1.380, Response: 0.080, WCRT: 0.082, Next Release:  1.600
+Task 2- Release:  1.300, Completion:  1.456, Response: 0.156, WCRT: 0.159, Next Release:  1.700
+Task 3- Release:  1.300, Completion:  1.533, Response: 0.233, WCRT: 0.235, Next Release:  1.900
+Task 1- Release:  1.600, Completion:  1.679, Response: 0.079, WCRT: 0.082, Next Release:  1.900
+Task 2- Release:  1.700, Completion:  1.781, Response: 0.081, WCRT: 0.159, Next Release:  2.100
+Task 1- Release:  1.900, Completion:  1.977, Response: 0.077, WCRT: 0.082, Next Release:  2.200
+Task 3- Release:  1.900, Completion:  2.053, Response: 0.153, WCRT: 0.235, Next Release:  2.500
+Task 2- Release:  2.100, Completion:  2.182, Response: 0.082, WCRT: 0.159, Next Release:  2.500
+Task 1- Release:  2.200, Completion:  2.278, Response: 0.078, WCRT: 0.082, Next Release:  2.500
+Ok
+Task 1- Release:  2.500, Completion:  2.581, Response: 0.081, WCRT: 0.082, Next Release:  2.800
+Task 2- Release:  2.500, Completion:  2.658, Response: 0.158, WCRT: 0.159, Next Release:  2.900
+Task 3- Release:  2.500, Completion:  2.734, Response: 0.234, WCRT: 0.235, Next Release:  3.100
+Task 1- Release:  2.800, Completion:  2.879, Response: 0.079, WCRT: 0.082, Next Release:  3.100
+Task 2- Release:  2.900, Completion:  2.977, Response: 0.077, WCRT: 0.159, Next Release:  3.300
+Task 1- Release:  3.100, Completion:  3.179, Response: 0.079, WCRT: 0.082, Next Release:  3.400
+Task 3- Release:  3.100, Completion:  3.256, Response: 0.156, WCRT: 0.235, Next Release:  3.700
+Task 2- Release:  3.300, Completion:  3.378, Response: 0.078, WCRT: 0.159, Next Release:  3.700
+Task 1- Release:  3.400, Completion:  3.482, Response: 0.082, WCRT: 0.082, Next Release:  3.700
+Ok
+Task 1- Release:  3.700, Completion:  3.778, Response: 0.078, WCRT: 0.082, Next Release:  4.000
+Task 2- Release:  3.700, Completion:  3.857, Response: 0.157, WCRT: 0.159, Next Release:  4.100
+Task 3- Release:  3.700, Completion:  3.934, Response: 0.234, WCRT: 0.235, Next Release:  4.300
+Task 1- Release:  4.000, Completion:  4.083, Response: 0.083, WCRT: 0.083, Next Release:  4.300
+Task 2- Release:  4.100, Completion:  4.177, Response: 0.077, WCRT: 0.159, Next Release:  4.500
+
+
+Watchdog task 1-2-3-4, Calibration 1000
+
+Task 1- Release:  0.100, Completion:  0.216, Response: 0.116, WCRT: 0.116, Next Release:  0.400
+Task 2- Release:  0.100, Completion:  0.332, Response: 0.232, WCRT: 0.232, Next Release:  0.500
+Task 1- Release:  0.400, Completion:  0.518, Response: 0.118, WCRT: 0.118, Next Release:  0.700
+Task 2- Release:  0.500, Completion:  0.634, Response: 0.134, WCRT: 0.232, Next Release:  0.900
+Task 3- Release:  0.100, Completion:  0.678, Response: 0.578, WCRT: 0.578, Next Release:  0.700
+Task 1- Release:  0.700, Completion:  0.818, Response: 0.118, WCRT: 0.118, Next Release:  1.000
+Task 1- Release:  1.000, Completion:  1.118, Response: 0.118, WCRT: 0.118, Next Release:  1.300
+Task 2- Release:  0.900, Completion:  1.133, Response: 0.233, WCRT: 0.233, Next Release:  1.300
+Task 3- Release:  0.700, Completion:  1.163, Response: 0.463, WCRT: 0.578, Next Release:  1.300
+ 
+Error
+ 
+Task 1- Release:  1.300, Completion:  1.415, Response: 0.115, WCRT: 0.118, Next Release:  1.600
+Task 2- Release:  1.300, Completion:  1.531, Response: 0.231, WCRT: 0.233, Next Release:  1.700
+Task 1- Release:  1.600, Completion:  1.718, Response: 0.118, WCRT: 0.118, Next Release:  1.900
+Task 2- Release:  1.700, Completion:  1.878, Response: 0.178, WCRT: 0.233, Next Release:  2.100
+Task 1- Release:  1.900, Completion:  2.017, Response: 0.117, WCRT: 0.118, Next Release:  2.200
+Task 3- Release:  1.300, Completion:  2.036, Response: 0.736, WCRT: 0.736, Next Release:  1.900 ==> Task 3 violates Deadline!
+Task 1- Release:  2.200, Completion:  2.317, Response: 0.117, WCRT: 0.118, Next Release:  2.500
+Task 2- Release:  2.100, Completion:  2.332, Response: 0.232, WCRT: 0.233, Next Release:  2.500
+Task 3- Release:  1.900, Completion:  2.383, Response: 0.482, WCRT: 0.736, Next Release:  2.500
+ 
+Ok
+ 
+Task 4- Release:  0.100, Completion:  2.451, Response: 2.351, WCRT: 2.351, Next Release:  1.300 ==> Task 4 violates Deadline!
+Task 1- Release:  2.500, Completion:  2.619, Response: 0.119, WCRT: 0.119, Next Release:  2.800
+Task 2- Release:  2.500, Completion:  2.794, Response: 0.294, WCRT: 0.294, Next Release:  2.900
+Task 1- Release:  2.800, Completion:  2.918, Response: 0.118, WCRT: 0.119, Next Release:  3.100
+Task 2- Release:  2.900, Completion:  3.033, Response: 0.133, WCRT: 0.294, Next Release:  3.300
+Task 1- Release:  3.100, Completion:  3.218, Response: 0.118, WCRT: 0.119, Next Release:  3.400
+Task 3- Release:  2.500, Completion:  3.256, Response: 0.756, WCRT: 0.756, Next Release:  3.100 ==> Task 3 violates Deadline!
+Task 1- Release:  3.400, Completion:  3.518, Response: 0.118, WCRT: 0.119, Next Release:  3.700
+Task 2- Release:  3.300, Completion:  3.533, Response: 0.233, WCRT: 0.294, Next Release:  3.700
+ 
+Error
+ 
+Task 3- Release:  3.100, Completion:  3.602, Response: 0.502, WCRT: 0.756, Next Release:  3.700
+Task 1- Release:  3.700, Completion:  3.869, Response: 0.169, WCRT: 0.169, Next Release:  4.000
+Task 2- Release:  3.700, Completion:  3.985, Response: 0.285, WCRT: 0.294, Next Release:  4.100
+Task 1- Release:  4.000, Completion:  4.118, Response: 0.118, WCRT: 0.169, Next Release:  4.300
+Task 2- Release:  4.100, Completion:  4.234, Response: 0.134, WCRT: 0.294, Next Release:  4.500
+Task 1- Release:  4.300, Completion:  4.418, Response: 0.118, WCRT: 0.169, Next Release:  4.600
+Task 3- Release:  3.700, Completion:  4.452, Response: 0.752, WCRT: 0.756, Next Release:  4.300 ==> Task 3 violates Deadline!
+Task 1- Release:  4.600, Completion:  4.718, Response: 0.118, WCRT: 0.169, Next Release:  4.900
+Task 2- Release:  4.500, Completion:  4.733, Response: 0.233, WCRT: 0.294, Next Release:  4.900
+ 
+Error
+ 
+Task 3- Release:  4.300, Completion:  4.849, Response: 0.549, WCRT: 0.756, Next Release:  4.900
+Task 1- Release:  4.900, Completion:  5.018, Response: 0.118, WCRT: 0.169, Next Release:  5.200
+Task 2- Release:  4.900, Completion:  5.133, Response: 0.233, WCRT: 0.294, Next Release:  5.300
+Task 1- Release:  5.200, Completion:  5.319, Response: 0.119, WCRT: 0.169, Next Release:  5.500
+Task 2- Release:  5.300, Completion:  5.434, Response: 0.134, WCRT: 0.294, Next Release:  5.700
+Task 3- Release:  4.900, Completion:  5.481, Response: 0.581, WCRT: 0.756, Next Release:  5.500
+Task 1- Release:  5.500, Completion:  5.616, Response: 0.116, WCRT: 0.169, Next Release:  5.800
+Task 1- Release:  5.800, Completion:  5.917, Response: 0.117, WCRT: 0.169, Next Release:  6.100
+Task 2- Release:  5.700, Completion:  5.984, Response: 0.284, WCRT: 0.294, Next Release:  6.100
+ 
+Ok
+ 
+Task 3- Release:  5.500, Completion:  6.013, Response: 0.513, WCRT: 0.756, Next Release:  6.100
+
