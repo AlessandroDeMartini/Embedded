@@ -1,11 +1,12 @@
-pragma Task_Dispatching_Policy(FIFO_Within_Priorities);
+pragma Priority_Specific_Dispatching(FIFO_Within_Priorities, 2, 30);
+pragma Priority_Specific_Dispatching(Round_Robin_Within_Priorities, 1, 1);
 
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Float_Text_IO;
 
 with Ada.Real_Time; use Ada.Real_Time;
 
-procedure Rms2 is
+procedure Rms21 is
 
    	package Duration_IO is new Ada.Text_IO.Fixed_IO(Duration);
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
@@ -112,6 +113,78 @@ procedure Rms2 is
       	end loop;
    	end T;
 
+task type BT(Id: Integer; Prio : Integer; Phase: Integer; 
+				Computation_Time : Integer) is
+
+		pragma Priority(Prio);
+
+   	end BT;
+
+   	task body BT is
+      	Next              : Time;
+		Release           : Time;
+		Completed         : Time;
+		Response          : Time_Span;
+		Average_Response  : Float;
+		-- Absolute_Deadline : Time;
+		WCRT              : Time_Span; -- measured WCRT (Worst Case Response Time)
+     	Dummy             : Integer;
+		Iterations        : Integer;
+   		Period            : Integer := Computation_Time; -- The Task is repeted repitedelly
+		begin
+
+			-- Initial Release - Phase
+
+			Release          := Clock + Milliseconds(Phase);
+			delay until Release;
+			Next             := Release;
+			Iterations       := 0;
+			Average_Response := 0.0;
+			WCRT             := Milliseconds(0);
+
+      		loop
+        	 	Next := Release + Milliseconds(Period);
+				-- Absolute_Deadline := Release + Milliseconds(Relative_Deadline);
+
+        	 	-- Simulation of User Function
+				for I in 1..Computation_Time loop
+					Dummy := F(Calibrator); 
+				end loop;	
+
+				Completed := Clock;
+				Response := Completed - Release;
+				Average_Response := (Float(Iterations) * Average_Response + To_Float(Response)) / Float(Iterations + 1);
+
+				if Response > WCRT then
+					WCRT := Response;
+				end if;
+
+				Iterations := Iterations + 1;			
+				Put("B_Task ");
+				Int_IO.Put(Id, 1);
+				Put("- Release: ");
+				Duration_IO.Put(To_Duration(Release - Start), 2, 3);
+				Put(", Completion: ");
+				Duration_IO.Put(To_Duration(Completed - Start), 2, 3);
+				Put(", Response: ");
+				Duration_IO.Put(To_Duration(Response), 1, 3);
+				Put(", WCRT: ");
+				Ada.Float_Text_IO.Put(To_Float(WCRT), fore => 1, aft => 3, exp => 0);	
+				Put(", Next Release: ");
+				Duration_IO.Put(To_Duration(Next - Start), 2, 3);
+
+				-- if Completed > Absolute_Deadline then 
+				--	Put(" ==> Task ");
+				--	Int_IO.Put(Id, 1);
+				--	Put(" violates Deadline!");
+				-- end if;
+	
+				Put_Line("");
+				Release := Next;
+        	 	delay until Release;
+      		end loop;
+   	end BT;
+
    	-- Running Tasks
 	-- NOTE: All tasks should have a minimum phase, so that they have the same time base!
 	
@@ -131,4 +204,4 @@ procedure Rms2 is
 begin
    Start := Clock; -- Central Start Time
    null;
-end Rms2;
+end Rms21;
