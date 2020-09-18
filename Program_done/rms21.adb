@@ -197,8 +197,11 @@ task type BT(Id: Integer; Prio : Integer; Phase: Integer;
 	                                                    -- Relative Deadline: 300
 	Task_2 : T(2, 30, Warm_Up_Time, 400, 100, 400);
 	Task_3 : T(3, 10, Warm_Up_Time, 600, 100, 600);
-    Task_4 : T(4, 1, Warm_Up_Time, 1200, 200, 1200);
+        --Task_4 : T(4, 1, Warm_Up_Time, 1200, 200, 1200);
 
+	Taskb_1 : BT(1, 1, 0, 100);
+	Taskb_2 : BT(2, 1, 0, 100);
+	Taskb_3 : BT(3, 1, 0, 100);
 
 -- Main Program: Terminates after measuring start time	
 begin
