@@ -12,15 +12,11 @@ procedure Overloaddetection1 is
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
 	
    	Start : Time;                          -- Start Time of the System
-	Calibrator: constant Integer   := 1000; -- Calibration for correct timing
+	Calibrator: constant Integer   := 650; -- Calibration for correct timing
 	                                       -- ==> Change parameter for your architecture!
 	Warm_Up_Time: constant Integer := 100; -- Warmup time in milliseconds
 
 	Hyperpiriod : Integer := 1200;
-
-	-- Priority definition
-
-	
 
 	-- Watchdog implementation
 
@@ -177,7 +173,6 @@ procedure Overloaddetection1 is
 		Completed         : Time;
 		Response          : Time_Span;
 		Average_Response  : Float;
-		-- Absolute_Deadline : Time;
 		WCRT              : Time_Span; -- measured WCRT (Worst Case Response Time)
      	Dummy             : Integer;
 		Iterations        : Integer;

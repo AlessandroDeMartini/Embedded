@@ -10,10 +10,10 @@ procedure Overloaddetection is
    	package Duration_IO is new Ada.Text_IO.Fixed_IO(Duration);
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
 	
-   	Start : Time;                          -- Start Time of the System
+   	Start : Time;                           -- Start Time of the System
 	Calibrator: constant Integer   := 1000; -- Calibration for correct timing
-	                                       -- ==> Change parameter for your architecture!
-	Warm_Up_Time: constant Integer := 100; -- Warmup time in milliseconds
+	                                        -- ==> Change parameter for your architecture!
+	Warm_Up_Time: constant Integer := 100;  -- Warmup time in milliseconds
 
 	Hyperpiriod : Integer := 1200;
 
