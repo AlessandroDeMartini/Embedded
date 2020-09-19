@@ -35,8 +35,8 @@ Task 2- Release:  0.500, Completion:  0.578, Response: 0.078, WCRT: 0.158, Next 
 Task 1- Release:  0.700, Completion:  0.778, Response: 0.078, WCRT: 0.080, Next Release:  1.000
 Task 3- Release:  0.700, Completion:  0.855, Response: 0.155, WCRT: 0.234, Next Release:  1.300
 Task 2- Release:  0.900, Completion:  0.978, Response: 0.078, WCRT: 0.158, Next Release:  1.300
-Task 1- Release:  1.000, Completion:  1.080, Response: 0.080, WCRT: 0.080, Next Release:  1.300
-Task 1- Release:  1.300, Completion:  1.380, Response: 0.080, WCRT: 0.080, Next Release:  1.600
+Task 1- Release:  1.000, Completion:  1.080, Response: 0.080, WCRT: 0.080, Next Release:  1.300 - Hyperperiod
+Task 1- Release:  1.300, Completion:  1.380, Response: 0.080, WCRT: 0.080, Next Release:  1.600   (Different scheduling)
 Task 2- Release:  1.300, Completion:  1.458, Response: 0.158, WCRT: 0.158, Next Release:  1.700
 Task 3- Release:  1.300, Completion:  1.535, Response: 0.235, WCRT: 0.235, Next Release:  1.900
 Task 1- Release:  1.600, Completion:  1.681, Response: 0.081, WCRT: 0.081, Next Release:  1.900

@@ -6,7 +6,7 @@ with Ada.Float_Text_IO;
 
 with Ada.Real_Time; use Ada.Real_Time;
 
-procedure Overloaddetection1 is
+procedure mixedscheduling_overloaddetection is
 
    	package Duration_IO is new Ada.Text_IO.Fixed_IO(Duration);
    	package Int_IO is new Ada.Text_IO.Integer_IO(Integer);
@@ -277,4 +277,4 @@ procedure Overloaddetection1 is
 begin
    Start := Clock; -- Central Start Time
    null;
-end Overloaddetection1;
+end mixedscheduling_overloaddetection;
