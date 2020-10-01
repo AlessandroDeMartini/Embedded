@@ -139,7 +139,7 @@ ACDS_VERSION := 13.0sp1
 # Define path to the application ELF. 
 # It may be used by the makefile fragments so is defined before including them. 
 # 
-ELF := ../bin/TwoTasks.elf
+ELF := ../bin/sharedvariable.elf
 
 # Paths to C, C++, and assembly source files.
 C_SRCS :=
@@ -151,7 +151,7 @@ ASM_SRCS :=
 # using those SRC_DIR variables.
 SRC_DIR_01 := $(call adjust-path,../src)
 
-SDIR_C_SRCS += $(SRC_DIR_01)/TwoTasks.c
+SDIR_C_SRCS += $(SRC_DIR_01)/sharedvariable.c
 SDIR_CXX_SRCS :=
 SDIR_ASM_SRCS :=
 

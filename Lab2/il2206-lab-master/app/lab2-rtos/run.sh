@@ -21,7 +21,7 @@ JDI_FILE=../../hardware/DE2-pre-built/IL2206_DE2_Nios2.jdi
 # SOF_FILE=../../hardware/DE2-115-pre-built/IL2206_DE2_115_Nios2.sof
 # JDI_FILE=../../hardware/DE2-115-pre-built/IL2206_DE2_115_Nios2.jdi
 
-APP_NAME=TwoTasks
+APP_NAME=sharedvariable
 CPU_NAME=nios2
 BSP_PATH=../../bsp/il2206-pre-built-ucosii
 SRC_PATH=./src
