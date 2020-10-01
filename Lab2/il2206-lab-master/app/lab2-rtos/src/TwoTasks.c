@@ -9,7 +9,7 @@
 #include "system.h"
 
 #define DEBUG 1
-#define SEM   1
+#define SEM   0
 #define HW_TIMER_PERIOD 100
 
 /* Definition of Task Stacks */

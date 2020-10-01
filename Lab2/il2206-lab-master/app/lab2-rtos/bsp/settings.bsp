@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Sep 29, 2020 2:44:03 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1601390643477</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Oct 1, 2020 6:52:21 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1601535141960</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>./</BspGeneratedLocation>
         <BspSettingsFile>../bsp/settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../../hardware/DE2-pre-built/DE2_Nios2System.sopcinfo</SopcDesignFile>
