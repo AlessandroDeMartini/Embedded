@@ -1,6 +1,6 @@
 rms2 tsk 1-2-3-4 - Calibration = 750
 
-ase:  0.100, Completion:  0.188, Response: 0.088, WCRT: 0.088, Next Release:  0.400
+Task 1- Release:  0.100, Completion:  0.188, Response: 0.088, WCRT: 0.088, Next Release:  0.400
 Task 2- Release:  0.101, Completion:  0.275, Response: 0.174, WCRT: 0.174, Next Release:  0.501
 Task 3- Release:  0.102, Completion:  0.362, Response: 0.260, WCRT: 0.260, Next Release:  0.702
 Task 1- Release:  0.400, Completion:  0.488, Response: 0.088, WCRT: 0.088, Next Release:  0.700
