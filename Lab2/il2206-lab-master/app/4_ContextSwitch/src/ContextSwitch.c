@@ -5,6 +5,7 @@
 #include <inttypes.h> //printf with32u
 #include "includes.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_avalon_performance_counter.h" //insert library needed by counter
 #include "sys/alt_irq.h"
 #include "sys/alt_alarm.h"
 #include "system.h"
@@ -26,6 +27,10 @@ OS_EVENT  *DispSem2;
 #define TASK1_PRIORITY      6  // highest priority
 #define TASK2_PRIORITY      7
 #define TASK_STAT_PRIORITY 12  // lowest priority 
+
+// ((void *)PERFORMANCE_COUNTER_BASE) p  //definition peripheral's HW base adress
+ //probably it is not written in the right way 
+
 
 void printStackSize(char* name, int prio) 
 {
@@ -58,23 +63,30 @@ void task1(void* pdata)
     { 
       /*  Semaphore is waiting, this task continues only if the semaphore was segnaled before */
         
-        char text1[] = "Task 0 - State ";
-
-        int i;
-        for (i = 0; i < strlen(text1); i++)
-	        putchar(text1[i]);
-
-        putchar(state);
-        putchar('\n');
+        // char text1[] = "Task 0 - State ";
+// 
+        // int i;
+        // for (i = 0; i < strlen(text1); i++)
+	      //   putchar(text1[i]);
+// 
+        // putchar(state);
+        // putchar('\n');
 
         OSSemPost(DispSem2); // Semaphore is signaled 
 
+
         OSSemPend(DispSem1, 0, &err); // Semaphore is waiting
+
+        PERF_RESET( PERFORMANCE_COUNTER_BASE );   //reset of the counter 
+        
+        PERF_START_MEASURING( PERFORMANCE_COUNTER_BASE );  //start the counter  when the semaphores say to wait
+          
+        // PERF_BEGIN(); //don't know if it could work in 2 different cycles. It work together with perf_end
 
         if (state == '0')
             state = '1';
         else
-            state = '0';
+            state = '0';  
 
         OSTimeDlyHMSM(0, 0, 0, 1); // 11ms delay
       
@@ -94,13 +106,21 @@ void task2(void* pdata)
     { 
         OSSemPend(DispSem2, 0, &err); // semaphore is waiting 
 
-        char text2[] = "Task 1 - State ";
-        int i;
-        for (i = 0; i < strlen(text2); i++)
-	        putchar(text2[i]);
+        PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE ); //stop the counter when the semaphores say to start next task
 
-        putchar(state);
-        putchar('\n');
+        int clock_cycles;
+        clock_cycles = perf_get_total_time( (void *) PERFORMANCE_COUNTER_BASE ); // alt_u64 number;
+        long double second_time = (long double) clock_cycles/ 50 ;
+
+        printf( "total time %Lf 1e-6 seconds; \n", second_time);
+
+        // char text2[] = "Task 1 - State ";
+        // int i;
+        // for (i = 0; i < strlen(text2); i++)
+	      //   putchar(text2[i]);
+// 
+        // putchar(state);
+        // putchar('\n');
 
         if (state == '0')
             state = '1';
