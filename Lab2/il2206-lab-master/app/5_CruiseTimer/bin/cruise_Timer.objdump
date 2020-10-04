@@ -35,43 +35,43 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   7 .debug_aranges 00000ef8  00000000  00000000  00017048  2**3
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_pubnames 0000265e  00000000  00000000  00017f40  2**0
+  8 .debug_pubnames 0000266a  00000000  00000000  00017f40  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_info   0002c972  00000000  00000000  0001a59e  2**0
+  9 .debug_info   0002c97e  00000000  00000000  0001a5aa  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_abbrev 0000a754  00000000  00000000  00046f10  2**0
+ 10 .debug_abbrev 0000a754  00000000  00000000  00046f28  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_line   0001cee4  00000000  00000000  00051664  2**0
+ 11 .debug_line   0001cee4  00000000  00000000  0005167c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_frame  0000256c  00000000  00000000  0006e548  2**2
+ 12 .debug_frame  0000256c  00000000  00000000  0006e560  2**2
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    000042fd  00000000  00000000  00070ab4  2**0
+ 13 .debug_str    000042fd  00000000  00000000  00070acc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_loc    00011610  00000000  00000000  00074db1  2**0
+ 14 .debug_loc    00011610  00000000  00000000  00074dc9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_alt_sim_info 00000010  00000000  00000000  000863c4  2**2
+ 15 .debug_alt_sim_info 00000010  00000000  00000000  000863dc  2**2
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_ranges 00000ff8  00000000  00000000  000863d8  2**3
+ 16 .debug_ranges 00000ff8  00000000  00000000  000863f0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 17 .thread_model 00000006  00000000  00000000  0008c3e4  2**0
+ 17 .thread_model 00000006  00000000  00000000  0008c408  2**0
                   CONTENTS, READONLY
- 18 .cpu          00000005  00000000  00000000  0008c3ea  2**0
+ 18 .cpu          00000005  00000000  00000000  0008c40e  2**0
                   CONTENTS, READONLY
- 19 .qsys         00000001  00000000  00000000  0008c3ef  2**0
+ 19 .qsys         00000001  00000000  00000000  0008c413  2**0
                   CONTENTS, READONLY
- 20 .simulation_enabled 00000001  00000000  00000000  0008c3f0  2**0
+ 20 .simulation_enabled 00000001  00000000  00000000  0008c414  2**0
                   CONTENTS, READONLY
- 21 .stderr_dev   0000000b  00000000  00000000  0008c3f1  2**0
+ 21 .stderr_dev   0000000b  00000000  00000000  0008c415  2**0
                   CONTENTS, READONLY
- 22 .stdin_dev    0000000b  00000000  00000000  0008c3fc  2**0
+ 22 .stdin_dev    0000000b  00000000  00000000  0008c420  2**0
                   CONTENTS, READONLY
- 23 .stdout_dev   0000000b  00000000  00000000  0008c407  2**0
+ 23 .stdout_dev   0000000b  00000000  00000000  0008c42b  2**0
                   CONTENTS, READONLY
- 24 .sopc_system_name 0000000f  00000000  00000000  0008c412  2**0
+ 24 .sopc_system_name 0000000f  00000000  00000000  0008c436  2**0
                   CONTENTS, READONLY
- 25 .jdi          0000509f  00000000  00000000  0008c421  2**0
+ 25 .jdi          00005137  00000000  00000000  0008c445  2**0
                   CONTENTS, READONLY
- 26 .sopcinfo     0007119e  00000000  00000000  000914c0  2**0
+ 26 .sopcinfo     00075163  00000000  00000000  0009157c  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 01000000 l    d  .entry	00000000 .entry
@@ -308,7 +308,6 @@ SYMBOL TABLE:
 01000000 g     F .entry	0000000c __reset
 00115d30 g     O .bss	00000002 OSTmrUsed
 001005ac g     F .text	000002e4 VehicleTask
-00115cbc g     O .bss	00000004 Task1Tmr
 00114156 g     O .rwdata	00000002 OSTmrWheelTblSize
 00100000 g       *ABS*	00000000 __flash_exceptions_start
 001140f6 g     O .rwdata	00000002 OSEventSize
@@ -337,7 +336,7 @@ SYMBOL TABLE:
 0010b424 g     F .text	0000004c OS_EventTaskRemove
 00111340 g     F .text	00000070 alt_find_dev
 001072b4 g     F .text	000000a0 memcpy
-00115cc0 g     O .bss	00000004 Mbox_Velocity
+00115cbc g     O .bss	00000004 Mbox_Velocity
 00114120 g     O .rwdata	00000002 OSRdyTblSize
 00111054 g     F .text	00000020 alt_up_character_lcd_write_fd
 0011c14c g     O .bss	00000340 OSTmrTbl
@@ -467,6 +466,7 @@ SYMBOL TABLE:
 00115cd8 g     O .bss	00000004 __nlocale_changed
 00101770 g     F .text	00000008 __umodsi3
 001140fe g     O .rwdata	00000002 OSFlagGrpSize
+00115cc0 g     O .bss	00000004 VehicleTmrSem
 00110258 g     F .text	000000a8 OSTmrStateGet
 0011fdd0 g       *ABS*	00000000 end
 00101830 g     F .text	00000160 __pack_f
@@ -474,6 +474,7 @@ SYMBOL TABLE:
 0010c074 g     F .text	00000084 OS_TaskStat
 00111ff8 g       *ABS*	00000000 __CTOR_LIST__
 00180000 g       *ABS*	00000000 __alt_stack_pointer
+00115cc4 g     O .bss	00000004 ControlTmr
 00110f70 g     F .text	00000050 alt_avalon_timer_sc_init
 001017b0 g     F .text	00000080 __clzsi2
 00110db8 g     F .text	000001b8 altera_avalon_jtag_uart_write
@@ -504,6 +505,7 @@ SYMBOL TABLE:
 00100bdc g     F .text	00000098 __floatsisf
 00111c4c g     F .text	00000134 __register_exitproc
 00115d4d g     O .bss	00000001 OSTaskCtr
+00115cc8 g     O .bss	00000004 VehicleTmr
 0010f974 g     F .text	000001a0 OSTimeDlyHMSM
 00107f5c g     F .text	00000254 __multiply
 001110a4 g     F .text	00000064 alt_up_character_lcd_erase_pos
@@ -516,7 +518,6 @@ SYMBOL TABLE:
 00107b08 g     F .text	0000017c __d2b
 0010e940 g     F .text	0000009c OSSemPost
 0010be80 g     F .text	00000054 OSSchedUnlock
-001001a0 g     F .text	00000040 Task2TmrCallback
 0011088c g     F .text	00000010 altera_avalon_jtag_uart_read_fd
 00111ae8 g     F .text	000000a4 alt_get_fd
 00115d50 g     O .bss	00000004 OSMemFreeList
@@ -525,7 +526,6 @@ SYMBOL TABLE:
 0010a8cc g     F .text	000000c8 __fpcmp_parts_d
 00114128 g     O .rwdata	00000002 OSTaskCreateExtEn
 00108f74 g     F .text	00000070 _close_r
-00115cc4 g     O .bss	00000004 Task2TmrSem
 00111bd8 g     F .text	00000074 memcmp
 0010b2fc g     F .text	00000004 OS_Dummy
 0011086c g     F .text	00000010 altera_avalon_jtag_uart_close_fd
@@ -544,7 +544,6 @@ SYMBOL TABLE:
 00108d18 g     F .text	00000060 __sread
 00115d58 g     O .bss	00000004 OSQFreeList
 00111a4c g     F .text	0000009c alt_find_file
-00100160 g     F .text	00000040 Task1TmrCallback
 00111250 g     F .text	00000070 alt_dev_llist_insert
 0010b240 g     F .text	000000b4 __malloc_lock
 0010af38 g     F .text	00000050 sbrk
@@ -562,10 +561,10 @@ SYMBOL TABLE:
 0011087c g     F .text	00000010 altera_avalon_jtag_uart_write_fd
 001124c6 g     O .rodata	00000100 OSUnMapTbl
 00114122 g     O .rwdata	00000002 OSSemEn
+001001a0 g     F .text	00000040 ControlTmrCallback
 00111178 g     F .text	00000070 alt_up_character_lcd_shift_cursor
 0010ce78 g     F .text	000001f4 OSFlagPost
 00108c2c g     F .text	00000008 __sclose
-00115cc8 g     O .bss	00000004 Task2Tmr
 00180000 g       *ABS*	00000000 __alt_heap_limit
 001090f4 g     F .text	00000014 fclose
 0010b300 g     F .text	00000084 OS_EventTaskWait
@@ -625,7 +624,6 @@ SYMBOL TABLE:
 001068e0 g     F .text	0000001c setlocale
 0011da9c g     O .bss	00000800 OSTmrTaskStk
 0010c7d0 g     F .text	00000088 OSFlagCreate
-00115cd0 g     O .bss	00000004 Task1TmrSem
 001140a4 g     O .rwdata	00000004 _impure_ptr
 00115cf8 g     O .bss	00000004 alt_argc
 00111300 g     F .text	00000040 _do_dtors
@@ -661,7 +659,7 @@ SYMBOL TABLE:
 01000144 g       *ABS*	00000000 __ram_exceptions_end
 00110b90 g     F .text	0000007c altera_avalon_jtag_uart_ioctl
 0010fb14 g     F .text	000000f8 OSTimeDlyResume
-00115cd4 g     O .bss	00000004 Mbox_Brake
+00115cd0 g     O .bss	00000004 Mbox_Brake
 0010ca78 g     F .text	000000d4 OSFlagNameSet
 0010d2f4 g     F .text	00000190 OSMboxPend
 0010f684 g     F .text	000000f0 OSTaskStkChk
@@ -676,6 +674,7 @@ SYMBOL TABLE:
 001066b8 g     F .text	000000c8 _fwalk_reent
 00107c84 g     F .text	0000018c __mdiff
 00101708 g     F .text	00000060 __modsi3
+00115cd4 g     O .bss	00000004 ControlTmrSem
 0010d0e8 g     F .text	00000038 OSMboxAccept
 00180000 g       *ABS*	00000000 __alt_data_end
 01000020 g     F .exceptions	00000000 alt_exception
@@ -737,6 +736,7 @@ SYMBOL TABLE:
 00114126 g     O .rwdata	00000002 OSTaskCreateEn
 0010b5c0 g     F .text	0000001c OS_EventWaitListInit
 00111840 g     F .text	00000004 OSTaskIdleHook
+00100160 g     F .text	00000040 VehicleTmrCallback
 00000000  w      *UND*	00000000 free
 00105b48 g     F .text	00000004 __sinit_lock_acquire
 001081ec g     F .text	0000012c __multadd
@@ -856,14 +856,14 @@ Disassembly of section .text:
 0010015c <alt_after_alt_main>:
   10015c:	003fff06 	br	10015c <alt_after_alt_main>
 
-00100160 <Task1TmrCallback>:
+00100160 <VehicleTmrCallback>:
   100160:	defffc04 	addi	sp,sp,-16
   100164:	dfc00315 	stw	ra,12(sp)
   100168:	df000215 	stw	fp,8(sp)
   10016c:	df000204 	addi	fp,sp,8
   100170:	e13ffe15 	stw	r4,-8(fp)
   100174:	e17fff15 	stw	r5,-4(fp)
-  100178:	d1271017 	ldw	r4,-25536(gp)
+  100178:	d1270c17 	ldw	r4,-25552(gp)
   10017c:	010e9400 	call	10e940 <OSSemPost>
   100180:	01000474 	movhi	r4,17
   100184:	2107ff04 	addi	r4,r4,8188
@@ -874,14 +874,14 @@ Disassembly of section .text:
   100198:	dec00204 	addi	sp,sp,8
   10019c:	f800283a 	ret
 
-001001a0 <Task2TmrCallback>:
+001001a0 <ControlTmrCallback>:
   1001a0:	defffc04 	addi	sp,sp,-16
   1001a4:	dfc00315 	stw	ra,12(sp)
   1001a8:	df000215 	stw	fp,8(sp)
   1001ac:	df000204 	addi	fp,sp,8
   1001b0:	e13ffe15 	stw	r4,-8(fp)
   1001b4:	e17fff15 	stw	r5,-4(fp)
-  1001b8:	d1270d17 	ldw	r4,-25548(gp)
+  1001b8:	d1271117 	ldw	r4,-25532(gp)
   1001bc:	010e9400 	call	10e940 <OSSemPost>
   1001c0:	01000474 	movhi	r4,17
   1001c4:	21080504 	addi	r4,r4,8212
@@ -1168,11 +1168,11 @@ Disassembly of section .text:
   1005d8:	01000474 	movhi	r4,17
   1005dc:	21080b04 	addi	r4,r4,8236
   1005e0:	0101fbc0 	call	101fbc <puts>
-  1005e4:	d1270c17 	ldw	r4,-25552(gp)
+  1005e4:	d1270b17 	ldw	r4,-25556(gp)
   1005e8:	e17ffe84 	addi	r5,fp,-6
   1005ec:	010d5680 	call	10d568 <OSMboxPost>
   1005f0:	e0bffe05 	stb	r2,-8(fp)
-  1005f4:	d1271017 	ldw	r4,-25536(gp)
+  1005f4:	d1270c17 	ldw	r4,-25552(gp)
   1005f8:	e1bffe04 	addi	r6,fp,-8
   1005fc:	000b883a 	mov	r5,zero
   100600:	010e6ec0 	call	10e6ec <OSSemPend>
@@ -1187,7 +1187,7 @@ Disassembly of section .text:
   100624:	1000021e 	bne	r2,zero,100630 <VehicleTask+0x84>
   100628:	e0bffd17 	ldw	r2,-12(fp)
   10062c:	e0bffc15 	stw	r2,-16(fp)
-  100630:	d1271117 	ldw	r4,-25532(gp)
+  100630:	d1271017 	ldw	r4,-25536(gp)
   100634:	e1bffe04 	addi	r6,fp,-8
   100638:	01400044 	movi	r5,1
   10063c:	010d2f40 	call	10d2f4 <OSMboxPend>
@@ -1351,7 +1351,7 @@ Disassembly of section .text:
   1008ac:	01000474 	movhi	r4,17
   1008b0:	21082304 	addi	r4,r4,8332
   1008b4:	0101fbc0 	call	101fbc <puts>
-  1008b8:	d1270c17 	ldw	r4,-25552(gp)
+  1008b8:	d1270b17 	ldw	r4,-25556(gp)
   1008bc:	e1bffe04 	addi	r6,fp,-8
   1008c0:	000b883a 	mov	r5,zero
   1008c4:	010d2f40 	call	10d2f4 <OSMboxPend>
@@ -1362,7 +1362,7 @@ Disassembly of section .text:
   1008d8:	e17ffe44 	addi	r5,fp,-7
   1008dc:	010d5680 	call	10d568 <OSMboxPost>
   1008e0:	e0bffe05 	stb	r2,-8(fp)
-  1008e4:	d1270d17 	ldw	r4,-25548(gp)
+  1008e4:	d1271117 	ldw	r4,-25532(gp)
   1008e8:	e1bffe04 	addi	r6,fp,-8
   1008ec:	000b883a 	mov	r5,zero
   1008f0:	010e6ec0 	call	10e6ec <OSSemPend>
@@ -1413,7 +1413,7 @@ Disassembly of section .text:
   10099c:	01c00434 	movhi	r7,16
   1009a0:	39c05804 	addi	r7,r7,352
   1009a4:	01106280 	call	110628 <OSTmrCreate>
-  1009a8:	d0a70b15 	stw	r2,-25556(gp)
+  1009a8:	d0a70e15 	stw	r2,-25544(gp)
   1009ac:	e0bffe03 	ldbu	r2,-8(fp)
   1009b0:	10803fcc 	andi	r2,r2,255
   1009b4:	1004c03a 	cmpne	r2,r2,zero
@@ -1433,7 +1433,7 @@ Disassembly of section .text:
   1009ec:	01c00434 	movhi	r7,16
   1009f0:	39c06804 	addi	r7,r7,416
   1009f4:	01106280 	call	110628 <OSTmrCreate>
-  1009f8:	d0a70e15 	stw	r2,-25544(gp)
+  1009f8:	d0a70d15 	stw	r2,-25548(gp)
   1009fc:	e0bffe03 	ldbu	r2,-8(fp)
   100a00:	10803fcc 	andi	r2,r2,255
   100a04:	1004c03a 	cmpne	r2,r2,zero
@@ -1441,7 +1441,7 @@ Disassembly of section .text:
   100a0c:	01000474 	movhi	r4,17
   100a10:	21084004 	addi	r4,r4,8448
   100a14:	0101fbc0 	call	101fbc <puts>
-  100a18:	d1270b17 	ldw	r4,-25556(gp)
+  100a18:	d1270e17 	ldw	r4,-25544(gp)
   100a1c:	e17ffe04 	addi	r5,fp,-8
   100a20:	01101540 	call	110154 <OSTmrStart>
   100a24:	e0bffe03 	ldbu	r2,-8(fp)
@@ -1451,7 +1451,7 @@ Disassembly of section .text:
   100a34:	01000474 	movhi	r4,17
   100a38:	21084504 	addi	r4,r4,8468
   100a3c:	0101fbc0 	call	101fbc <puts>
-  100a40:	d1270e17 	ldw	r4,-25544(gp)
+  100a40:	d1270d17 	ldw	r4,-25548(gp)
   100a44:	e17ffe04 	addi	r5,fp,-8
   100a48:	01101540 	call	110154 <OSTmrStart>
   100a4c:	e0bffe03 	ldbu	r2,-8(fp)
@@ -1463,19 +1463,19 @@ Disassembly of section .text:
   100a64:	0101fbc0 	call	101fbc <puts>
   100a68:	0009883a 	mov	r4,zero
   100a6c:	010e50c0 	call	10e50c <OSSemCreate>
-  100a70:	d0a71015 	stw	r2,-25536(gp)
+  100a70:	d0a70c15 	stw	r2,-25552(gp)
   100a74:	0009883a 	mov	r4,zero
   100a78:	010e50c0 	call	10e50c <OSSemCreate>
-  100a7c:	d0a70d15 	stw	r2,-25548(gp)
+  100a7c:	d0a71115 	stw	r2,-25532(gp)
   100a80:	0009883a 	mov	r4,zero
   100a84:	010d1200 	call	10d120 <OSMboxCreate>
   100a88:	d0a70a15 	stw	r2,-25560(gp)
   100a8c:	0009883a 	mov	r4,zero
   100a90:	010d1200 	call	10d120 <OSMboxCreate>
-  100a94:	d0a70c15 	stw	r2,-25552(gp)
+  100a94:	d0a70b15 	stw	r2,-25556(gp)
   100a98:	0009883a 	mov	r4,zero
   100a9c:	010d1200 	call	10d120 <OSMboxCreate>
-  100aa0:	d0a71115 	stw	r2,-25532(gp)
+  100aa0:	d0a71015 	stw	r2,-25536(gp)
   100aa4:	010bed40 	call	10bed4 <OSStatInit>
   100aa8:	01800474 	movhi	r6,17
   100aac:	319f7204 	addi	r6,r6,32200
