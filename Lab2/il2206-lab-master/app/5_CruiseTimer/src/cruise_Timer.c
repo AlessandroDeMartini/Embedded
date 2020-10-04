@@ -61,23 +61,22 @@ OS_EVENT *Mbox_Brake;
 
 // Semaphores
 
-OS_EVENT *VehicleTmrSem;
-OS_EVENT *ControlTmrSem;
+OS_EVENT *Task1TmrSem;
+OS_EVENT *Task2TmrSem;
 
 // SW-Timer
 
-OS_TMR *VehicleTmr;
-OS_TMR *ControlTmr;
+OS_TMR *Task1Tmr;
+OS_TMR *Task2Tmr;
 
 /* Timer Callback Functions */ 
-void VehicleTmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(VehicleTmrSem);
-  printf("OSSemPost(VehicleTmrSem);\n");
+void Task1TmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(Task1TmrSem);
+  printf("OSSemPost(Task1Sem);\n");
 }
-
-void ControlTmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(ControlTmrSem);
-  printf("OSSemPost(ControlTmrSem);\n");
+void Task2TmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(Task2TmrSem);
+  printf("OSSemPost(Task2Sem);\n");
 }
 
 /*
@@ -248,7 +247,7 @@ void VehicleTask(void* pdata)
       err = OSMboxPost(Mbox_Velocity, (void *) &velocity);
 
       // OSTimeDlyHMSM(0,0,0,VEHICLE_PERIOD); 
-      OSSemPend(VehicleTmrSem, 0, &err);
+      OSSemPend(Task1TmrSem, 0, &err);
 
       /* Non-blocking read of mailbox: 
 	    - message in mailbox: update throttle
@@ -293,10 +292,10 @@ void VehicleTask(void* pdata)
 	      position = 0;
 
       show_velocity_on_sevenseg((INT8S) velocity);
-      show_target_velocity((INT8S) velocity);
+
     }
 } 
-
+ 
 /*
  * The task 'ControlTask' is the main task of the application. It reacts
  * on sensors and generates responses.
@@ -320,7 +319,7 @@ void ControlTask(void* pdata)
 
       // OSTimeDlyHMSM(0,0,0, CONTROL_PERIOD);
 
-      OSSemPend(ControlTmrSem, 0, &err);
+      OSSemPend(Task2TmrSem, 0, &err);
     }
 }
 
@@ -356,12 +355,12 @@ void StartTask(void* pdata)
    */
 
    //Create VehicleTask Timer
-   VehicleTmr = OSTmrCreate(0, //delay
+   Task1Tmr = OSTmrCreate(0, //delay
                           VEHICLE_PERIOD/HW_TIMER_PERIOD, //period
                           OS_TMR_OPT_PERIODIC,
-                          VehicleTmrCallback, //OS_TMR_CALLBACK
+                          Task1TmrCallback, //OS_TMR_CALLBACK
                           (void *)0,
-                          "VehicleTmr",
+                          "Task1Tmr",
                           &err);
                             
    if (DEBUG) {
@@ -371,12 +370,12 @@ void StartTask(void* pdata)
    }
    
    //Create ControlTask Timer
-   ControlTmr = OSTmrCreate(0, //delay
+   Task2Tmr = OSTmrCreate(0, //delay
                             CONTROL_PERIOD/HW_TIMER_PERIOD, //period
                             OS_TMR_OPT_PERIODIC,
-                            ControlTmrCallback, //OS_TMR_CALLBACK
+                            Task2TmrCallback, //OS_TMR_CALLBACK
                             (void *)0,
-                            "ControlTmr",
+                            "Task2Tmr",
                             &err);
                             
    if (DEBUG) {
@@ -408,8 +407,8 @@ void StartTask(void* pdata)
    * Creation of Kernel Objects
    */
   
-  VehicleTmrSem = OSSemCreate(0);   
-  ControlTmrSem = OSSemCreate(0); 
+  Task1TmrSem = OSSemCreate(0);   
+  Task2TmrSem = OSSemCreate(0); 
 
 
   // Mailboxes

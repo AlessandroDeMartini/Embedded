@@ -31,11 +31,12 @@ OS_STK    StartTask_Stack[TASK_STACKSIZE];
 int delay; // Delay of HW-timer 
 
 /*
- * ISR for HW Timer - Interrupt service routine
+ * ISR for HW Timer
  */
 alt_u32 alarm_handler(void* context)
 {
   OSTmrSignal(); /* Signals a 'tick' to the SW timers */
+  
   return delay;
 }
 
@@ -108,12 +109,12 @@ void StartTask(void* pdata)
 
    //Create Task1 Timer
    Task1Tmr = OSTmrCreate(0, //delay
-                          TASK1_PERIOD/HW_TIMER_PERIOD, //period
-                          OS_TMR_OPT_PERIODIC,
-                          Task1TmrCallback, //OS_TMR_CALLBACK
-                          (void *)0,
-                          "Task1Tmr",
-                          &err);
+                            TASK1_PERIOD/HW_TIMER_PERIOD, //period
+                            OS_TMR_OPT_PERIODIC,
+                            Task1TmrCallback, //OS_TMR_CALLBACK
+                            (void *)0,
+                            "Task1Tmr",
+                            &err);
                             
    if (DEBUG) {
     if (err == OS_ERR_NONE) { //if creation successful
@@ -121,7 +122,7 @@ void StartTask(void* pdata)
     }
    }
    
-   //Create Task2 Timer
+   //Create Task1 Timer
    Task2Tmr = OSTmrCreate(0, //delay
                             TASK2_PERIOD/HW_TIMER_PERIOD, //period
                             OS_TMR_OPT_PERIODIC,
