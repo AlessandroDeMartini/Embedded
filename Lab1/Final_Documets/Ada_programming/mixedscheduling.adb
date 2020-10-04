@@ -1,11 +1,6 @@
-<<<<<<< HEAD:Program_done/rms21.adb
-pragma Priority_Specific_Dispatching(FIFO_Within_Priorities, 10, 50);
-pragma Priority_Specific_Dispatching(Round_Robin_Within_Priorities, 1, 9);
-=======
 -- Add priority specification -> FIFO for main tasks & Round_Robin for background tasks
 pragma Priority_Specific_Dispatching(FIFO_Within_Priorities, 15, 60);
 pragma Priority_Specific_Dispatching(Round_Robin_Within_Priorities, 1, 1);
->>>>>>> 0ba811a84c3a583cf13842e0dd76e56572c933ea:Lab1/Final_Documets/Ada_programming/mixedscheduling.adb
 
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Float_Text_IO;
@@ -22,10 +17,6 @@ procedure Mixedscheduling is
 	                                       -- ==> Change parameter for your architecture!
 	Warm_Up_Time: constant Integer := 100; -- Warmup time in milliseconds
 	
-<<<<<<< HEAD:Program_done/rms21.adb
-	
-=======
->>>>>>> 0ba811a84c3a583cf13842e0dd76e56572c933ea:Lab1/Final_Documets/Ada_programming/mixedscheduling.adb
 	-- Conversion Function: Time_Span to Float
 	function To_Float(TS : Time_Span) return Float is
         SC   : Seconds_Count;
@@ -53,7 +44,7 @@ procedure Mixedscheduling is
 	-- Workload Model for a Parametric Task
    	task type T(Id: Integer; Prio: Integer; Phase: Integer; Period : Integer; 
 				Computation_Time : Integer; Relative_Deadline: Integer) is
-      	pragma Priority(Prio); -- A number between 10 & 50 give FIFO priority
+      	pragma Priority(Prio); -- A higher number gives a higher priority
 
    	end;
 
@@ -123,15 +114,8 @@ procedure Mixedscheduling is
 	-- Workload Model for a Background Task
 	task type BT(Id: Integer; Prio : Integer; Phase: Integer; 
 				Computation_Time : Integer) is
-<<<<<<< HEAD:Program_done/rms21.adb
-
-		pragma Priority(Prio); -- A number between 1 & 9 give Round Robin priority
-
-   	end BT;
-=======
 		pragma Priority(Prio);
 	end BT;
->>>>>>> 0ba811a84c3a583cf13842e0dd76e56572c933ea:Lab1/Final_Documets/Ada_programming/mixedscheduling.adb
 
    	task body BT is
       	Next              : Time;
@@ -201,19 +185,10 @@ procedure Mixedscheduling is
 	                                                    -- Relative Deadline: 300
 	Task_2 : T(2, 30, Warm_Up_Time, 400, 100, 400);
 	Task_3 : T(3, 20, Warm_Up_Time, 600, 100, 600);
-<<<<<<< HEAD:Program_done/rms21.adb
-    Task_4 : T(4, 11, Warm_Up_Time, 1200, 200, 1200);
-
-	Taskb_1 : BT(1, 8, 0, 100);
-	Taskb_2 : BT(2, 6, 0, 100);
-	Taskb_3 : BT(3, 2, 0, 100);
-
-=======
     
 	TaskB_1 : BT(1, 1, 1, 100);
 	TaskB_2 : BT(2, 1, 1, 100);
 	TaskB_3 : BT(3, 1, 1, 100);
->>>>>>> 0ba811a84c3a583cf13842e0dd76e56572c933ea:Lab1/Final_Documets/Ada_programming/mixedscheduling.adb
 
 -- Main Program: Terminates after measuring start time	
 begin

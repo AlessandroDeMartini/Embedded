@@ -61,22 +61,22 @@ OS_EVENT *Mbox_Brake;
 
 // Semaphores
 
-OS_EVENT *Task1TmrSem;
-OS_EVENT *Task2TmrSem;
+OS_EVENT *VehicleTmrSem;
+OS_EVENT *ControlTmrSem;
 
 // SW-Timer
 
-OS_TMR *Task1Tmr;
-OS_TMR *Task2Tmr;
+OS_TMR *VehicleTmr;
+OS_TMR *ControlTmr;
 
 /* Timer Callback Functions */ 
-void Task1TmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(Task1TmrSem);
-  printf("OSSemPost(Task1Sem);\n");
+void VehicleTmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(VehicleTmrSem);
+  printf("OSSemPost(VehicleTmr);\n");
 }
-void Task2TmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(Task2TmrSem);
-  printf("OSSemPost(Task2Sem);\n");
+void ControlTmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(ControlTmrSem);
+  printf("OSSemPost(ControlTmr);\n");
 }
 
 /*
@@ -247,7 +247,7 @@ void VehicleTask(void* pdata)
       err = OSMboxPost(Mbox_Velocity, (void *) &velocity);
 
       // OSTimeDlyHMSM(0,0,0,VEHICLE_PERIOD); 
-      OSSemPend(Task1TmrSem, 0, &err);
+      OSSemPend(VehicleTmrSem, 0, &err);
 
       /* Non-blocking read of mailbox: 
 	    - message in mailbox: update throttle
@@ -319,7 +319,7 @@ void ControlTask(void* pdata)
 
       // OSTimeDlyHMSM(0,0,0, CONTROL_PERIOD);
 
-      OSSemPend(Task2TmrSem, 0, &err);
+      OSSemPend(ControlTmrSem, 0, &err);
     }
 }
 
@@ -355,51 +355,51 @@ void StartTask(void* pdata)
    */
 
    //Create VehicleTask Timer
-   Task1Tmr = OSTmrCreate(0, //delay
+   VehicleTmr = OSTmrCreate(0, //delay
                           VEHICLE_PERIOD/HW_TIMER_PERIOD, //period
                           OS_TMR_OPT_PERIODIC,
-                          Task1TmrCallback, //OS_TMR_CALLBACK
+                          VehicleTmrCallback, //OS_TMR_CALLBACK
                           (void *)0,
-                          "Task1Tmr",
+                          "VehicleTmr",
                           &err);
                             
    if (DEBUG) {
     if (err == OS_ERR_NONE) { //if creation successful
-      printf("Task1Tmr created\n");
+      printf("VehicleTmr created\n");
     }
    }
    
    //Create ControlTask Timer
-   Task2Tmr = OSTmrCreate(0, //delay
+   ControlTmr = OSTmrCreate(0, //delay
                             CONTROL_PERIOD/HW_TIMER_PERIOD, //period
                             OS_TMR_OPT_PERIODIC,
-                            Task2TmrCallback, //OS_TMR_CALLBACK
+                            ControlTmrCallback, //OS_TMR_CALLBACK
                             (void *)0,
-                            "Task2Tmr",
+                            "ControlTmr",
                             &err);
                             
    if (DEBUG) {
     if (err == OS_ERR_NONE) { //if creation successful
-      printf("Task2Tmr created\n");
+      printf("ControlTmr created\n");
     }
    }
 
 
   //start VehicleTask Timer
-  OSTmrStart(Task1Tmr, &err);
+  OSTmrStart(VehicleTmr, &err);
    
   if (DEBUG) {
     if (err == OS_ERR_NONE) { //if start successful
-      printf("Task1Tmr started\n");
+      printf("VehicleTmr started\n");
     }
   }
 
   //start ControlTask Timer
-  OSTmrStart(Task2Tmr, &err);
+  OSTmrStart(ControlTmr, &err);
    
   if (DEBUG) {
     if (err == OS_ERR_NONE) { //if start successful
-      printf("Task2Tmr started\n");
+      printf("ControlTmr started\n");
     }
   } 
 
@@ -407,8 +407,8 @@ void StartTask(void* pdata)
    * Creation of Kernel Objects
    */
   
-  Task1TmrSem = OSSemCreate(0);   
-  Task2TmrSem = OSSemCreate(0); 
+  VehicleTmrSem = OSSemCreate(0);   
+  ControlTmrSem = OSSemCreate(0); 
 
 
   // Mailboxes
