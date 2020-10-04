@@ -121,12 +121,12 @@ alt_u32 alarm_handler(void* context)
       
       if (chk == 1)
       {
-          OSSemPost (Semaphore1);
+          OSSemPost (Sem1);
          // printf("Vehicle\n");
       }
       if (chk == 2)
       {
-          OSSemPost (Semaphore2);
+          OSSemPost (Sem2);
           //printf("Control\n");
       }
   }
@@ -275,7 +275,7 @@ void VehicleTask(void* pdata)
 
   while(1)
     {
-      OSSemPend (Semaphore1, 0, &err);
+      OSSemPend (Sem1, 0, &err);
       
       if (engine == on)
       {
@@ -347,7 +347,7 @@ void ControlTask(void* pdata)
 
   while(1)
     {
-      OSSemPend (Semaphore2, 0, &err);
+      OSSemPend (Sem2, 0, &err);
       if (engine == on)
       {
 
