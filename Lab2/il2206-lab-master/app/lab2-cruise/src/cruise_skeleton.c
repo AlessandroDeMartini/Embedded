@@ -61,7 +61,14 @@ OS_EVENT *Mbox_Brake;
 
 // Semaphores
 
+
+
+
 // SW-Timer
+
+
+
+
 
 /*
  * Types
@@ -333,6 +340,35 @@ void StartTask(void* pdata)
   /* 
    * Create and start Software Timer 
    */
+
+
+Timer = OSTmrCreate ( INT32U dly,                              	// number that is the initial delay
+                      INT32U period,                           	// number that is the amount of time it will take before the timer expires
+                      INT8U opt,                               	// should chose between OS_TMR_OPT_PERIODIC that stand for periodic or OS_TMR_OPT_ONE_SHOT only once
+                      OS_TMR_CALLBACK callback,                	// callback function ?? shold be defined prior OSTmrStop()
+                      void *callback_arg,                      	// as before (argument of callback function)
+                      INT8U *pname,				// pointer that allow to give a name to the timer (also NULL)
+                      INT8U *perr);				// error (&err)  
+
+
+OSTmrStart(Timer, &err) 					// to actually start the timer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*
    * Creation of Kernel Objects
