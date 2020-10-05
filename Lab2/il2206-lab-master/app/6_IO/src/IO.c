@@ -351,36 +351,40 @@ void ButtonIOTask(void* pdata)
       {
         case CRUISE_CONTROL_FLAG:   // Key1 is pressed
           // IF check constraint
-          if(top_gear = on)
+          printf( "CRUISE_CONTROL_FLAG \n");
+
+          if(top_gear == on && velocity >= 20)
           {
             // cheack for velocity is necessery -> cannot activate cruise control if v < 20
-            printf( "Cruise_contro, velocity check: %d \n", velocity);  //to be delated and inserted in the if cycle below
+            printf( "Cruise_control, velocity check: %d \n", velocity);  //to be delated and inserted in the if cycle below
+            
+            cruise_control = on;    // start cruise control 
+            led_green = LED_GREEN_2;
 
-            //if(velocity >= 20)
-            //{
-              cruise_control = on;    // start cruise control 
-              led_green = LED_GREEN_2;
-            //}
           }
         break;
 
         case BRAKE_PEDAL_FLAG:      // Key2 is pressed
-            brake = on;             // start brake    
+            printf( "CRUISE_CONTROL_FLAG \n");
+            brake_pedal = on;       // start brake    
             cruise_control = off;   // cruise off     
             led_green = LED_GREEN_4;
-        break;
+          break;
         
         case GAS_PEDAL_FLAG:        // Key3 is pressed
-            gas = on;               // start gas      
+            printf( "CRUISE_CONTROL_FLAG \n");
+            gas_pedal = on;               // start gas      
             cruise_control = off;   // cruise off     
             led_green = LED_GREEN_6;
-        break;
+          break;
     
         default:
-            printf("Default state: led, cruise, break, gas off \n");
+          gas_pedal   = off;
+          brake_pedal = off;
+          printf("Default state: led, cruise, break, gas remain equals \n");
         break;
       }
-      OSSemPend(ControlTmrSem, 0, &err);
+      OSSemPend(ButtonTmrSem, 0, &err);
   }   
 }
 
@@ -389,53 +393,40 @@ void SwitchIOTask(void* pdata)
    int SwitchState;
    INT8U err;
    printf ("SwitchIO Task created!\n");
-   
+
    while (1)
    {
-     SwitchState = switches_pressed();
-     SwitchState = SwitchState & 0xf;
-     printf (%d,SwitchState"\n");
+      SwitchState = switches_pressed();
+      SwitchState = SwitchState & 0xf;
 
-     switch (SwitchState)
-     {
+      printf ("SwitchState: %d \n", SwitchState);
+
+      switch (SwitchState)
+      {
         case ENGINE_FLAG:                // Switch0 is pressed
-          if (newvariable = 1)           // define above bew variable to enter the state of the variable if up or down
-          {
-            engine = on;                 // engine on      
-            led_red = LED_RED_0;
-          }
-          else
-          {
-            engine = off;                // engine off  
-            //led_red OFF
-          }
           
-        break;
-        
-        case TOP_GEAR_FLAG:              // Switch1 is pressed
-          if (newvariable = 1)           // define above bew variable to enter the state of the variable if up or down
-          {
-            top_gear = on;               // top gear on    
-            led_red = LED_RED_1;
-          }
-          else
-          {
-            top_gear = off;              // top gear off
-            //led_red = LED_RED_1;   OFF
-          }
+          printf ("ENGINE_FLAG \n");
+          engine = on;                   // engine on      
+          led_red = LED_RED_0;
+
+          break;
+        case TOP_GEAR_FLAG:             // Switch1 is pressed
+
+          printf ("TOP_GEAR_FLAG");
+          top_gear = on;         
+          led_red = LED_RED_1;
           
-        break;
-    
+          break;
         default:
-            printf("Default state: led, cruise, break, gas off \n");
+          engine = off;
+          top_gear = off;
+          printf("Default state: engine, top_gear off \n");
         break;
-     }
-     OSSemPend(ControlTmrSem, 0, &err);
+      }
+     OSSemPend(SwitchTmrSem, 0, &err);
    }
 }
     
-
-
 /* 
  * The task 'StartTask' creates all other tasks kernel objects and
  * deletes itself afterwards.
@@ -526,6 +517,7 @@ void StartTask(void* pdata)
   VehicleTmrSem = OSSemCreate(0);   
   ControlTmrSem = OSSemCreate(0); 
   ButtonTmrSem  = OSSemCreate(0);
+  SwitchTmrSem  = OSSemCreate(0);
 
   // Mailboxes
   Mbox_Throttle = OSMboxCreate((void*) 0); /* Empty Mailbox - Throttle */
