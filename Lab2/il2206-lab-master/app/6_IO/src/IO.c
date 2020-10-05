@@ -38,21 +38,27 @@
 OS_STK StartTask_Stack[TASK_STACKSIZE]; 
 OS_STK ControlTask_Stack[TASK_STACKSIZE]; 
 OS_STK VehicleTask_Stack[TASK_STACKSIZE];
+OS_STK ButtonIO_Stack[TASK_STACKSIZE];
+OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 
 // Task Priorities
  
 #define STARTTASK_PRIO     5
 #define VEHICLETASK_PRIO  10
 #define CONTROLTASK_PRIO  12
+#define BUTTONIOTASK_PRIO  13
+#define SWITCHIOTASK_PRIO  14
 
 // Task Periods
 
 #define CONTROL_PERIOD  300
 #define VEHICLE_PERIOD  300
+#define BUTTONIO_PERIOD  300
+#define SWITCHIO_PERIOD  300
 
 /*
  * Definition of Kernel Objects 
- */
+*/
 
 // Mailboxes
 OS_EVENT *Mbox_Throttle;
@@ -63,11 +69,13 @@ OS_EVENT *Mbox_Brake;
 
 OS_EVENT *VehicleTmrSem;
 OS_EVENT *ControlTmrSem;
+OS_EVENT *ButtonTmrSem;
+OS_EVENT *SwitchTmrSem;
 
 // SW-Timer
 
 OS_TMR *VehicleTmr;
-OS_TMR *ControlTmr;
+OS_TMR *ControlTmr; // Since they have the same period the callback fuction could be just one (Possiblility to add two other functions)
 
 /* Timer Callback Functions */ 
 void VehicleTmrCallback (void *ptmr, void *callback_arg){
@@ -76,6 +84,8 @@ void VehicleTmrCallback (void *ptmr, void *callback_arg){
 }
 void ControlTmrCallback (void *ptmr, void *callback_arg){
   OSSemPost(ControlTmrSem);
+  OSSemPost(ButtonTmrSem);
+  OSSemPost(SwitchTmrSem);
   printf("OSSemPost(ControlTmr);\n");
 }
 
@@ -223,6 +233,83 @@ INT16S adjust_velocity(INT16S velocity, INT8S acceleration,
   }
   
   return new_velocity;
+}
+
+void ButtonIO(void* pdata)
+{ 
+  INT8U err;  
+  int button_state;
+  printf("Button task created \n");
+
+  while(1)
+  {
+
+    button_state = buttons_pressed();
+    
+    printf("button_state: %d \n", button_state);
+
+    /* switch (button_state)
+    {
+    case CRUISE_CONTROL_FLAG:
+      
+      // Accendi CruiseContrl
+      // Accendi LEDG2
+      // check constraints
+
+      break;
+    case BRAKE_PEDAL_FLAG:
+
+      // Accendi Break
+      // Disattiva cruise control
+      // Accendi il LEDG4
+
+      break;
+
+    case GAS_PEDAL_FLAG:
+
+      // Accendi il gas
+      // Togli il cruise
+      // Accendi LEDG6
+
+      break;
+
+    default:
+      break;
+    } */
+
+    OSSemPend(ControlTmrSem, 0, &err);
+  }
+
+}
+
+void SwitchIO(void* pdata)
+{ 
+  INT8U err;
+  int switch_state;
+  printf("Button task created \n");
+
+  while(1)
+  {
+
+    switch_state = switches_pressed();
+    printf("switch_state: %d \n", switch_state);
+
+    /* switch (switch_state)
+    {
+    case ENGINE_FLAG:
+
+      break;
+
+    case TOP_GEAR_FLAG:
+
+      break;
+
+    default:
+      break;
+    } */
+    OSSemPend(ControlTmrSem, 0, &err);
+  }
+
 }
 
 /*
