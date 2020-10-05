@@ -193,6 +193,8 @@ void show_velocity_on_sevenseg(INT8S velocity){
  */
 void show_target_velocity(INT8U target_vel)
 {
+  /*
+
   int tmp = target_vel;
   int out;
   INT8U out_high = 0;
@@ -214,6 +216,8 @@ void show_target_velocity(INT8U target_vel)
     out_high << 7  |
     out_low;
   IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_HEX_HIGH28_BASE,out);
+  
+  */
 }
 
 /*
@@ -227,6 +231,8 @@ void show_target_velocity(INT8U target_vel)
  */
 void show_position(INT16U position)
 {
+  /*
+
   INT32U ledStatus=0;
   if(position<400){
     ledStatus=0x20000;
@@ -243,6 +249,9 @@ void show_position(INT16U position)
   }
   INT32U mask= 0x3F000;
   change_led_switch_status(mask,ledStatus);
+
+  */
+
 }
 
 /*
@@ -346,14 +355,14 @@ void VehicleTask(void* pdata)
       printf("Accell: %d m/s2\n", acceleration);
       printf("Throttle: %d V\n", *throttle);
 
-      //position = position + velocity * VEHICLE_PERIOD / 1000;
+      position = position + velocity * VEHICLE_PERIOD / 1000;
       velocity = velocity  + acceleration * VEHICLE_PERIOD / 1000.0;
-      //if(position > 2400)
-	    //  position = 0;
-      position = adjust_position(position, velocity, acceleration, VEHICLE_PERIOD);
+      if(position > 2400)
+	      position = 0;
+      // position = adjust_position(position, velocity, acceleration, VEHICLE_PERIOD);
 
       show_velocity_on_sevenseg((INT8S) velocity);
-      show_target_velocity((INT8S) velocity);
+      // show_target_velocity((INT8S) velocity);
     }
 }
 
@@ -404,6 +413,7 @@ void ButtonIOTask(void* pdata)
     int led_value=((button_register & CRUISE_CONTROL_FLAG)>0)*0xff &  LED_GREEN_2
                   | ((button_register & BRAKE_PEDAL_FLAG)>0)*0xff  & LED_GREEN_4
                   | ((button_register & GAS_PEDAL_FLAG)>0)*0xff  & LED_GREEN_6;
+    
     change_led_button_status(led_value);
     
     OSSemPend(ButtonTaskTimerSem, 0, &err);

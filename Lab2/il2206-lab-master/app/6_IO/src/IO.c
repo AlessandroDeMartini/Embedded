@@ -53,8 +53,6 @@ OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 
 #define CONTROL_PERIOD  300
 #define VEHICLE_PERIOD  300
-#define BUTTONIO_PERIOD  300
-#define SWITCHIO_PERIOD  300
 
 /*
  * Definition of Kernel Objects 
@@ -76,18 +74,6 @@ OS_EVENT *SwitchTmrSem;
 
 OS_TMR *VehicleTmr;
 OS_TMR *ControlTmr; // Since they have the same period the callback fuction could be just one (Possiblility to add two other functions)
-
-/* Timer Callback Functions */ 
-void VehicleTmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(VehicleTmrSem);
-  printf("OSSemPost(VehicleTmr);\n");
-}
-void ControlTmrCallback (void *ptmr, void *callback_arg){
-  OSSemPost(ControlTmrSem);
-  OSSemPost(ButtonTmrSem);
-  OSSemPost(SwitchTmrSem);
-  printf("OSSemPost(ControlTmr);\n");
-}
 
 /*
  * Types
@@ -124,6 +110,18 @@ alt_u32 alarm_handler(void* context)
 {
   OSTmrSignal(); /* Signals a 'tick' to the SW timers */
   return delay;
+}
+
+/* Timer Callback Functions */ 
+void VehicleTmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(VehicleTmrSem);
+  printf("OSSemPost(VehicleTmr);\n");
+}
+void ControlTmrCallback (void *ptmr, void *callback_arg){
+  OSSemPost(ControlTmrSem);
+  OSSemPost(ButtonTmrSem);  // Same period, we don't need others timers 
+  OSSemPost(SwitchTmrSem);  // Same period, we don't need others timers
+  printf("OSSemPost(ControlTmr);\n");
 }
 
 static int b2sLUT[] = {0x40, //0
@@ -235,83 +233,6 @@ INT16S adjust_velocity(INT16S velocity, INT8S acceleration,
   return new_velocity;
 }
 
-void ButtonIO(void* pdata)
-{ 
-  INT8U err;  
-  int button_state;
-  printf("Button task created \n");
-
-  while(1)
-  {
-
-    button_state = buttons_pressed();
-    
-    printf("button_state: %d \n", button_state);
-
-    /* switch (button_state)
-    {
-    case CRUISE_CONTROL_FLAG:
-      
-      // Accendi CruiseContrl
-      // Accendi LEDG2
-      // check constraints
-
-      break;
-    case BRAKE_PEDAL_FLAG:
-
-      // Accendi Break
-      // Disattiva cruise control
-      // Accendi il LEDG4
-
-      break;
-
-    case GAS_PEDAL_FLAG:
-
-      // Accendi il gas
-      // Togli il cruise
-      // Accendi LEDG6
-
-      break;
-
-    default:
-      break;
-    } */
-
-    OSSemPend(ControlTmrSem, 0, &err);
-  }
-
-}
-
-void SwitchIO(void* pdata)
-{ 
-  INT8U err;
-  int switch_state;
-  printf("Button task created \n");
-
-  while(1)
-  {
-
-    switch_state = switches_pressed();
-    printf("switch_state: %d \n", switch_state);
-
-    /* switch (switch_state)
-    {
-    case ENGINE_FLAG:
-
-      break;
-
-    case TOP_GEAR_FLAG:
-
-      break;
-
-    default:
-      break;
-    } */
-    OSSemPend(ControlTmrSem, 0, &err);
-  }
-
-}
-
 /*
  * The task 'VehicleTask' updates the current velocity of the vehicle
  */
@@ -405,9 +326,58 @@ void ControlTask(void* pdata)
       err = OSMboxPost(Mbox_Throttle, (void *) &throttle);
 
       // OSTimeDlyHMSM(0,0,0, CONTROL_PERIOD);
-
       OSSemPend(ControlTmrSem, 0, &err);
     }
+}
+
+
+ /* The task ButtonIOTask permits to recive inpurs from buttons
+  * generating responses
+  */
+
+void ButtonIOTask(void* pdata)
+{
+    int value;
+    INT8U err;
+    printf ("ButtonIO Task created!\n");
+    
+    while (1)
+    {
+        value = buttons_pressed();
+        value = value & 0xf;
+        switch (value)
+        {
+            case CRUISE_CONTROL_FLAG:   // Key1 is pressed
+                
+                // IF check constraint
+                // start cruise control cruise_control = on;
+                // start LEDG2 
+                printf("CRUISE_CONTROL_FLAG");
+
+                break;
+                
+            case BRAKE_PEDAL_FLAG:      // Key2 is pressed
+                // start brake    brake = on;
+                // cruise off     cruise_control = off;
+                // start LEDG4
+                printf("BRAKE_PEDAL_FLAG");
+
+                break;
+                
+            case GAS_PEDAL_FLAG:        // Key3 is pressed
+                // start gas      gas = on;
+                // cruise off     cruise_control = off;
+                // start LEDG4
+                printf("GAS_PEDAL_FLAG");
+                break;
+                
+            default:
+                printf("Default");
+                break;
+        }
+        
+        OSSemPend(ControlTmrSem, 0, &err);
+    }   
 }
 
 /* 
@@ -438,7 +408,7 @@ void StartTask(void* pdata)
   }
 
   /* 
-   * Create and start Software Timer 
+   * Create Software Timers
    */
 
    //Create VehicleTask Timer
@@ -471,6 +441,9 @@ void StartTask(void* pdata)
     }
    }
 
+  /* 
+   * Start Software Timers
+   */
 
   //start VehicleTask Timer
   OSTmrStart(VehicleTmr, &err);
@@ -496,7 +469,7 @@ void StartTask(void* pdata)
   
   VehicleTmrSem = OSSemCreate(0);   
   ControlTmrSem = OSSemCreate(0); 
-
+  ButtonTmrSem  = OSSemCreate(0);
 
   // Mailboxes
   Mbox_Throttle = OSMboxCreate((void*) 0); /* Empty Mailbox - Throttle */
@@ -540,6 +513,19 @@ void StartTask(void* pdata)
 			(void *) 0,
 			OS_TASK_OPT_STK_CHK);
   
+  err = OSTaskCreateExt(
+			ButtonIOTask, // Pointer to task code
+			NULL,        // Pointer to argument that is
+			// passed to task
+			&ButtonIO_Stack[TASK_STACKSIZE-1], // Pointer to top
+			// of task stack
+			BUTTONIOTASK_PRIO,
+			BUTTONIOTASK_PRIO,
+			(void *)&ButtonIO_Stack[0],
+			TASK_STACKSIZE,
+			(void *) 0,
+			OS_TASK_OPT_STK_CHK);
+
   printf("All Tasks and Kernel Objects generated!\n");
 
   /* Task deletes itself */
