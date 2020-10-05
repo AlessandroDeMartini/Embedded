@@ -233,6 +233,8 @@ INT16S adjust_velocity(INT16S velocity, INT8S acceleration,
   return new_velocity;
 }
 
+INT16S velocity = 0; 
+
 /*
  * The task 'VehicleTask' updates the current velocity of the vehicle
  */
@@ -344,7 +346,7 @@ void ButtonIOTask(void* pdata)
   while (1)
   {
       ButtonState = buttons_pressed();
-      ButtonState = ButtonState & 0xf;
+      ButtonState = ButtonState & 0xf; // TRANSFORM IN 8 BIT LONG
       switch (ButtonState)
       {
         case CRUISE_CONTROL_FLAG:   // Key1 is pressed
