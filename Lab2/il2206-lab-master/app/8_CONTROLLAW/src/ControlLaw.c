@@ -24,6 +24,14 @@
 #define LED_RED_0 0x00000001 // Engine
 #define LED_RED_1 0x00000002 // Top Gear
 
+#define LED_RED_12 0x1000     // [2000m, 2400m]
+#define LED_RED_13 0x2000     // [1600m, 2000m)
+#define LED_RED_14 0x4000     // [1200m, 1600m)
+#define LED_RED_15 0x8000     // [800m, 1200m)
+#define LED_RED_16 0x10000    // [400m, 800m)
+#define LED_RED_17 0x20000    // [0m, 400m)
+
+
 #define LED_GREEN_0 0x0001 // Cruise Control activated
 #define LED_GREEN_2 0x0002 // Cruise Control Button
 #define LED_GREEN_4 0x0010 // Brake Pedal
@@ -62,6 +70,7 @@ OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 OS_EVENT *Mbox_Throttle;
 OS_EVENT *Mbox_Velocity;
 OS_EVENT *Mbox_Brake;
+OS_EVENT *Mbox_Cruise;
 
 // Semaphores
 
@@ -177,6 +186,17 @@ void show_velocity_on_sevenseg(INT8S velocity){
  */
 void show_target_velocity(INT8U target_vel)
 {
+  INT16S* cruise_velocity;
+
+  msg = OSMboxPend(Mbox_Cruise, 0, &err);
+  cruise_velocity = (INT16S*) msg;
+
+  if(cruise_control == on)
+  {
+    show_velocity_on_sevenseg(cruise_velocity);
+  }
+  else 
+    show_velocity_on_sevenseg(0);
 }
 
 /*
@@ -190,6 +210,30 @@ void show_target_velocity(INT8U target_vel)
  */
 void show_position(INT16U position)
 {
+  if(position<400)
+  {
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_17);
+  }
+  else if(position<800)
+  { 
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_16);
+  }
+  else if(position<1200)
+  {
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_15);
+  }
+  else if(position<1600)
+  { 
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_14);
+  else if(position<2000)
+  {
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_13);
+  }
+  else if(position<=2400)
+  {
+    IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_12); 
+  }
+
 }
 
 /*
@@ -232,7 +276,6 @@ INT16S adjust_velocity(INT16S velocity, INT8S acceleration,
   
   return new_velocity;
 }
-
 
 /*
  * The task 'VehicleTask' updates the current velocity of the vehicle
@@ -316,6 +359,7 @@ void ControlTask(void* pdata)
   INT8U throttle = 40; /* Value between 0 and 80, which is interpreted as between 0.0V and 8.0V */
   void* msg;
   INT16S* current_velocity;
+  INT16S* cruise_velocity;
 
   printf("Control Task created!\n");
 
@@ -324,7 +368,31 @@ void ControlTask(void* pdata)
       msg = OSMboxPend(Mbox_Velocity, 0, &err);
       current_velocity = (INT16S*) msg;
 
+      msg = OSMboxPend(Mbox_Cruise, 0, &err);
+      cruise_velocity = (INT16S*) msg;
+
+      // Se ho il cruise attivo prendo la velocità desiderata che rimane fissa a +- 4m/s
+
+      if (cruise_control == on)
+      {
+        led_green = LED_GREEN_0;
+        if(cruise_velocity >= 25) // What happen between 20 and 25
+        {
+          if( (cruise_velocity - current_velocity) > 4 )
+          {
+            throttle = throttle + 1;
+          }
+          if( (cruise_velocity - current_velocity) < 4 )
+          {
+            throttle = throttle - 1;
+          }
+
+        }
+      }
+
       err = OSMboxPost(Mbox_Throttle, (void *) &throttle);
+
+
 
       // OSTimeDlyHMSM(0,0,0, CONTROL_PERIOD);
       OSSemPend(ControlTmrSem, 0, &err);
@@ -347,11 +415,13 @@ void ButtonIOTask(void* pdata)
 
   while (1)
   {
-      msg = OSMboxPend(Mbox_Velocity, 0, &err);
-      current_velocity = (INT16S*) msg;
 
       ButtonState = buttons_pressed();
       ButtonState = ButtonState & 0xf; // TRANSFORM IN 8 BIT LONG
+      
+      msg = OSMboxPend(Mbox_Velocity, 0, &err);
+      current_velocity = (INT16S*) msg;
+
       switch (ButtonState)
       {
         case CRUISE_CONTROL_FLAG:   // Key1 is pressed
@@ -364,11 +434,12 @@ void ButtonIOTask(void* pdata)
             printf( "Cruise_control, velocity check: %d \n", velocity);  //to be delated and inserted in the if cycle below
             
             cruise_control = on;    // start cruise control 
+
+            err = OSMboxPost(Mbox_Cruise, (void *) &current_velocity);
+
             led_green = LED_GREEN_2;
 
           }
-          else
-            cruise_control = off;
         break;
 
         case BRAKE_PEDAL_FLAG:      // Key2 is pressed
@@ -529,8 +600,9 @@ void StartTask(void* pdata)
   // Mailboxes
   Mbox_Throttle = OSMboxCreate((void*) 0); /* Empty Mailbox - Throttle */
   Mbox_Velocity = OSMboxCreate((void*) 0); /* Empty Mailbox - Velocity */
-  Mbox_Brake = OSMboxCreate((void*) 0); /* Empty Mailbox - Velocity */
-   
+  Mbox_Brake    = OSMboxCreate((void*) 0); /* Empty Mailbox - Brake */
+  Mbox_Cruise   = OSMboxCreate((void*) 0); /* Empty Mailbox - Cruise */
+ 
   /*
     * Create statistics task
   */
