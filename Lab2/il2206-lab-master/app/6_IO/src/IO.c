@@ -337,48 +337,102 @@ void ControlTask(void* pdata)
 
 void ButtonIOTask(void* pdata)
 {
-    int value;
-    INT8U err;
-    printf ("ButtonIO Task created!\n");
-    
-    while (1)
-    {
-        value = buttons_pressed();
-        value = value & 0xf;
-        switch (value)
-        {
-            case CRUISE_CONTROL_FLAG:   // Key1 is pressed
-                
-                // IF check constraint
-                // start cruise control cruise_control = on;
-                // start LEDG2 
-                printf("CRUISE_CONTROL_FLAG");
+  int ButtonState;
+  INT8U err;
+  printf ("ButtonIO Task created!\n");
 
-                break;
-                
-            case BRAKE_PEDAL_FLAG:      // Key2 is pressed
-                // start brake    brake = on;
-                // cruise off     cruise_control = off;
-                // start LEDG4
-                printf("BRAKE_PEDAL_FLAG");
+  while (1)
+  {
+      ButtonState = buttons_pressed();
+      ButtonState = ButtonState & 0xf;
+      switch (ButtonState)
+      {
+        case CRUISE_CONTROL_FLAG:   // Key1 is pressed
+          // IF check constraint
+          if(top_gear = on)
+          {
+            // cheack for velocity is necessery -> cannot activate cruise control if v < 20
+            printf( "Cruise_contro, velocity check: %d \n", velocity);  //to be delated and inserted in the if cycle below
 
-                break;
-                
-            case GAS_PEDAL_FLAG:        // Key3 is pressed
-                // start gas      gas = on;
-                // cruise off     cruise_control = off;
-                // start LEDG4
-                printf("GAS_PEDAL_FLAG");
-                break;
-                
-            default:
-                printf("Default");
-                break;
-        }
+            //if(velocity >= 20)
+            //{
+              cruise_control = on;    // start cruise control 
+              led_green = LED_GREEN_2;
+            //}
+          }
+        break;
+
+        case BRAKE_PEDAL_FLAG:      // Key2 is pressed
+            brake = on;             // start brake    
+            cruise_control = off;   // cruise off     
+            led_green = LED_GREEN_4;
+        break;
         
-        OSSemPend(ControlTmrSem, 0, &err);
-    }   
+        case GAS_PEDAL_FLAG:        // Key3 is pressed
+            gas = on;               // start gas      
+            cruise_control = off;   // cruise off     
+            led_green = LED_GREEN_6;
+        break;
+    
+        default:
+            printf("Default state: led, cruise, break, gas off \n");
+        break;
+      }
+      OSSemPend(ControlTmrSem, 0, &err);
+  }   
 }
+
+void SwitchIOTask(void* pdata)
+{
+   int SwitchState;
+   INT8U err;
+   printf ("SwitchIO Task created!\n");
+   
+   while (1)
+   {
+     SwitchState = switches_pressed();
+     SwitchState = SwitchState & 0xf;
+     printf (%d,SwitchState"\n");
+
+     switch (SwitchState)
+     {
+        case ENGINE_FLAG:                // Switch0 is pressed
+          if (newvariable = 1)           // define above bew variable to enter the state of the variable if up or down
+          {
+            engine = on;                 // engine on      
+            led_red = LED_RED_0;
+          }
+          else
+          {
+            engine = off;                // engine off  
+            //led_red OFF
+          }
+          
+        break;
+        
+        case TOP_GEAR_FLAG:              // Switch1 is pressed
+          if (newvariable = 1)           // define above bew variable to enter the state of the variable if up or down
+          {
+            top_gear = on;               // top gear on    
+            led_red = LED_RED_1;
+          }
+          else
+          {
+            top_gear = off;              // top gear off
+            //led_red = LED_RED_1;   OFF
+          }
+          
+        break;
+    
+        default:
+            printf("Default state: led, cruise, break, gas off \n");
+        break;
+     }
+     OSSemPend(ControlTmrSem, 0, &err);
+   }
+}
+    
+
 
 /* 
  * The task 'StartTask' creates all other tasks kernel objects and
@@ -522,6 +576,19 @@ void StartTask(void* pdata)
 			BUTTONIOTASK_PRIO,
 			BUTTONIOTASK_PRIO,
 			(void *)&ButtonIO_Stack[0],
+			TASK_STACKSIZE,
+			(void *) 0,
+			OS_TASK_OPT_STK_CHK);
+
+  err = OSTaskCreateExt(
+			SwitchIOTask, // Pointer to task code
+			NULL,        // Pointer to argument that is
+			// passed to task
+			&SwitchIO_Stack[TASK_STACKSIZE-1], // Pointer to top
+			// of task stack
+			SWITCHIOTASK_PRIO,
+			SWITCHIOTASK_PRIO,
+			(void *)&SwitchIO_Stack[0],
 			TASK_STACKSIZE,
 			(void *) 0,
 			OS_TASK_OPT_STK_CHK);
