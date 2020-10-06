@@ -61,7 +61,7 @@ void task1(void* pdata)
 
     while (1)
     { 
-      printf("Task 0 - State %s \n", state);
+      printf("Task 0 - State %c \n", state);
 
       OSSemPost(DispSem2); // Semaphore is signaled 
       PERF_RESET( PERFORMANCE_COUNTER_BASE );   //reset of the counter 
@@ -111,15 +111,15 @@ void task2(void* pdata)
       {
         ContextSwitchAccumulator = ContextSwitchAccumulator + ContextSwitch_Seconds;
         count = count + 1;
-        ContextSwitchAverage = ContextSwitchAccumulator/ (double) count;
+        ContextSwitchAverage = ContextSwitchAccumulator/(double) count;
       }
         
       printf( "total time Context Switch: %Lf 1e-6 seconds; \n", ContextSwitch_Seconds);
 
       if(count >= 11)
-        printf( "total time Context Switch, AVARAGE: %Lf 1e-6 seconds; \n", ContextSwitch_Seconds);
+        printf( "total time Context Switch, AVARAGE: %Lf 1e-6 seconds; \n", ContextSwitchAverage);
 
-      printf("Task 1 - state %s \n",state);
+      printf("Task 1 - state %c \n",state);
 
       if (state == '0')
           state = '1';

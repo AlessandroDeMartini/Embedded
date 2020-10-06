@@ -25,7 +25,7 @@
 #define LED_RED_1 0x00000002 // Top Gear
 
 #define LED_GREEN_0 0x0001 // Cruise Control activated
-#define LED_GREEN_2 0x0002 // Cruise Control Button
+#define LED_GREEN_2 0x0002 // Cruise Control Button ----***** is 0x0004? check with simone
 #define LED_GREEN_4 0x0010 // Brake Pedal
 #define LED_GREEN_6 0x0040 // Gas Pedal
 
