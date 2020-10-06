@@ -108,8 +108,7 @@ void task2(void* pdata)
             state = '0';
 
         OSSemPost(DispSem1);  // Semaphore is signaled
-
-        OSTimeDlyHMSM(0, 0, 0, 1);  // 4ms delay
+        OSTimeDlyHMSM(0, 0, 0, 1);  // 1ms delay
 
     }
 }

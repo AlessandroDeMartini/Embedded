@@ -29,6 +29,12 @@
 #define LED_GREEN_4 0x0010 // Brake Pedal
 #define LED_GREEN_6 0x0040 // Gas Pedal
 
+#define LED_RED_12 
+#define LED_RED_12 
+#define LED_RED_12 
+#define LED_RED_12 
+#define LED_RED_12 
+#define LED_RED_12 
 /*
  * Definition of Tasks
  */
@@ -193,31 +199,7 @@ void show_velocity_on_sevenseg(INT8S velocity){
  */
 void show_target_velocity(INT8U target_vel)
 {
-  /*
 
-  int tmp = target_vel;
-  int out;
-  INT8U out_high = 0;
-  INT8U out_low = 0;
-  INT8U out_sign = 0;
-
-  if(target_vel < 0){
-    out_sign = int2seven(10);
-    tmp *= -1;
-  }else{
-    out_sign = int2seven(0);
-  }
-
-  out_high = int2seven(tmp / 10);
-  out_low = int2seven(tmp - (tmp/10) * 10);
-
-  out = int2seven(0) << 21 |
-    out_sign << 14 |
-    out_high << 7  |
-    out_low;
-  IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_HEX_HIGH28_BASE,out);
-  
-  */
 }
 
 /*
@@ -231,7 +213,6 @@ void show_target_velocity(INT8U target_vel)
  */
 void show_position(INT16U position)
 {
-  /*
 
   INT32U ledStatus=0;
   if(position<400){
@@ -249,8 +230,6 @@ void show_position(INT16U position)
   }
   INT32U mask= 0x3F000;
   change_led_switch_status(mask,ledStatus);
-
-  */
 
 }
 
@@ -325,10 +304,10 @@ void VehicleTask(void* pdata)
       */
       msg = OSMboxPend(Mbox_Throttle, 1, &err);
       if (err == OS_NO_ERR)
-	throttle = (INT8U*) msg;
+	    throttle = (INT8U*) msg;
       msg = OSMboxPend(Mbox_Brake, 1, &err);
       if (err == OS_NO_ERR)
-	brake_pedal = (enum active) msg;
+	    brake_pedal = (enum active) msg;
 
       // vehichle cannot effort more than 80 units of throttle
       if (*throttle > 80) *throttle = 80;

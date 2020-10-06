@@ -61,31 +61,26 @@ void task1(void* pdata)
 
     while (1)
     { 
+      printf("Task 0 - State %s \n", state);
+
+      OSSemPost(DispSem2); // Semaphore is signaled 
+      PERF_RESET( PERFORMANCE_COUNTER_BASE );   //reset of the counter 
       
-        if (state == '0')
-            state = '1';
-        else
-            state = '0';  
-
-        OSSemPost(DispSem2); // Semaphore is signaled 
-
-        PERF_RESET( PERFORMANCE_COUNTER_BASE );   //reset of the counter 
+      PERF_START_MEASURING( PERFORMANCE_COUNTER_BASE );  //start the counter  when the semaphores say to wait
+      OSSemPend(DispSem1, 0, &err); // Semaphore is waiting
         
-        PERF_START_MEASURING( PERFORMANCE_COUNTER_BASE );  //start the counter  when the semaphores say to wait
-
-        OSSemPend(DispSem1, 0, &err); // Semaphore is waiting
-          
-        // if (state == '0')
-        //     state = '1';
-        // else
-        //     state = '0';  
-
-        OSTimeDlyHMSM(0, 0, 0, 1); // 11ms delay
+      if (state == '0')
+          state = '1';
+      else
+          state = '0';  
+      
+      OSTimeDlyHMSM(0, 0, 0, 1); // 1ms delay
       
       /* Context Switch to next task
 		    * Task will go to the ready state
 		    * after the specified delay
 		  */
+
     }
 }
 
@@ -94,38 +89,46 @@ void task2(void* pdata)
 {
     INT8U err;
     char state = '0';
+    int clock_cycles = 0;
+    long double ContextSwitch_Seconds = 0;
+
+    int count = 0;
+    long double ContextSwitchAverage = 0;
+    long double ContextSwitchAccumulator=0;
+
     while (1)
     { 
         // PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE ); //stop the counter when the semaphores say to start next task
         
-        OSSemPend(DispSem2, 0, &err); // semaphore is waiting 
+      OSSemPend(DispSem2, 0, &err); // semaphore is waiting 
 
-        PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE ); //stop the counter when the semaphores say to start next task
+      PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE ); //stop the counter when the semaphores say to start next task
 
-        int clock_cycles;
+      clock_cycles = perf_get_total_time( (void *) PERFORMANCE_COUNTER_BASE ); // alt_u64 number;
+      ContextSwitch_Seconds  = (long double) clock_cycles/ 50 ;
 
-        clock_cycles = perf_get_total_time( (void *) PERFORMANCE_COUNTER_BASE ); // alt_u64 number;
-        long double second_time = (long double) clock_cycles/ 50 ;
+      if(ContextSwitchAverage == 0 || ContextSwitch_Seconds < ContextSwitchAverage*1.5)
+      {
+        ContextSwitchAccumulator = ContextSwitchAccumulator + ContextSwitch_Seconds;
+        count = count + 1;
+        ContextSwitchAverage = ContextSwitchAccumulator/ (double) count;
+      }
+        
+      printf( "total time Context Switch: %Lf 1e-6 seconds; \n", ContextSwitch_Seconds);
 
-        printf( "total time %Lf 1e-6 seconds; \n", second_time);
-        // printf( "total time %d 1e-6 seconds; \n", clock_cycles);// second_time);
+      if(count >= 11)
+        printf( "total time Context Switch, AVARAGE: %Lf 1e-6 seconds; \n", ContextSwitch_Seconds);
 
-        // char text2[] = "Task 1 - State ";
-        // int i;
-        // for (i = 0; i < strlen(text2); i++)
-	      //   putchar(text2[i]);
-// 
-        // putchar(state);
-        // putchar('\n');
+      printf("Task 1 - state %s \n",state);
 
-        if (state == '0')
-            state = '1';
-        else
-            state = '0';
-
-        OSSemPost(DispSem1);  // Semaphore is signaled
-
-        OSTimeDlyHMSM(0, 0, 0, 1);  // 4ms delay
+      if (state == '0')
+          state = '1';
+      else
+          state = '0';
+      
+      
+      OSSemPost(DispSem1);  // Semaphore is signaled
+      OSTimeDlyHMSM(0, 0, 0, 1);  // 1ms delay
 
     }
 }
