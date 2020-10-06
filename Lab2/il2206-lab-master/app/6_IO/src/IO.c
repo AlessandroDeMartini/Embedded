@@ -348,14 +348,17 @@ void ButtonIOTask(void* pdata)
 
   while (1)
   {
-      msg = OSMboxPend(Mbox_Velocity, 0, &err);
-      current_velocity = (INT16S*) msg;
 
       ButtonState = buttons_pressed();
       ButtonState = ButtonState & 0xf; // TRANSFORM IN 8 BIT LONG
+      
+      msg = OSMboxPend(Mbox_Velocity, 0, &err);
+      current_velocity = (INT16S*) msg;
+
       switch (ButtonState)
       {
         case CRUISE_CONTROL_FLAG:   // Key1 is pressed
+
           // IF check constraint
           printf( "CRUISE_CONTROL_FLAG \n");
 
@@ -365,31 +368,39 @@ void ButtonIOTask(void* pdata)
             printf( "Cruise_control, velocity check: %d \n", velocity);  //to be delated and inserted in the if cycle below
             
             cruise_control = on;    // start cruise control 
-            led_green = LED_GREEN_2;
+
+            err = OSMboxPost(Mbox_Cruise, (void *) &current_velocity);
+
+            IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_GREEN_2);
 
           }
-          else
-            cruise_control = off;
+
         break;
 
         case BRAKE_PEDAL_FLAG:      // Key2 is pressed
+
             printf( "CRUISE_CONTROL_FLAG \n");
             brake_pedal = on;       // start brake    
-            cruise_control = off;   // cruise off     
-            led_green = LED_GREEN_4;
-          break;
+            cruise_control = off;   // cruise off   
+            IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_GREEN_4); 
+
+        break;
         
         case GAS_PEDAL_FLAG:        // Key3 is pressed
+
             printf( "CRUISE_CONTROL_FLAG \n");
             gas_pedal = on;               // start gas      
-            cruise_control = off;   // cruise off     
-            led_green = LED_GREEN_6;
-          break;
+            cruise_control = off;   // cruise off
+            IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_GREEN_6); 
+
+        break;
     
         default:
+
           gas_pedal   = off;
           brake_pedal = off;
           printf("Default state: led, cruise, break, gas remain equals \n");
+
         break;
       }
       OSSemPend(ButtonTmrSem, 0, &err);
@@ -414,21 +425,23 @@ void SwitchIOTask(void* pdata)
         case ENGINE_FLAG:                // Switch0 is pressed
           
           printf ("ENGINE_FLAG \n");
-          engine = on;                   // engine on      
-          led_red = LED_RED_0;
+          engine = on;                   // engine on   
+          IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_0);   
 
-          break;
+        break;
         case TOP_GEAR_FLAG:             // Switch1 is pressed
 
           printf ("TOP_GEAR_FLAG");
           top_gear = on;         
-          led_red = LED_RED_1;
-          
-          break;
+          IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_1);    
+
+        break;
         default:
+
           engine = off;
           top_gear = off;
           printf("Default state: engine, top_gear off \n");
+
         break;
       }
      OSSemPend(SwitchTmrSem, 0, &err);

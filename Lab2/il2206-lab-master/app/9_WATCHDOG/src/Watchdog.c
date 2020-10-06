@@ -4,8 +4,7 @@
 #include "altera_avalon_pio_regs.h"
 #include "sys/alt_irq.h"
 #include "sys/alt_alarm.h"
-
-//#include "time.h"                 
+             
 #include "sys/alt_timestamp.h"
 #include "sys/alt_cache.h"
 
@@ -37,7 +36,7 @@
 
 
 #define LED_GREEN_0 0x0001    // Cruise Control activated
-#define LED_GREEN_2 0x0002    // Cruise Control Button
+#define LED_GREEN_2 0x0004    // Cruise Control Button
 #define LED_GREEN_4 0x0010    // Brake Pedal
 #define LED_GREEN_6 0x0040    // Gas Pedal
 
@@ -53,7 +52,8 @@ OS_STK VehicleTask_Stack[TASK_STACKSIZE];
 OS_STK ButtonIO_Stack[TASK_STACKSIZE];
 OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 
-
+OS_STK Watchdog_Stack[TASK_STACKSIZE];
+OS_STK Overload_Stack[TASK_STACKSIZE];
 
 // Task Priorities
  
@@ -62,6 +62,9 @@ OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 #define CONTROLTASK_PRIO   12
 #define BUTTONIOTASK_PRIO  13
 #define SWITCHIOTASK_PRIO  14
+
+#define WATCHDOG_PRIO  13
+#define OVERLOAD_PRIO  14
 
 // Task Periods
 
