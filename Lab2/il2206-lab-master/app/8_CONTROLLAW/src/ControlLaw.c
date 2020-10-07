@@ -122,6 +122,12 @@ int switches_pressed(void)
   return IORD_ALTERA_AVALON_PIO_DATA(DE2_PIO_TOGGLES18_BASE);    
 }
 
+/*
+  * Definition of two fungtion to light up the leds we need. Red has 18 bit and green has 9.
+  * We use a mask in order to change junt the bit we need. Moreover we reset them each time
+  * the swich is move in off position
+*/
+
 void change_RED_led_status(int mask, int led_values)
 {
   led_red = ((~mask) & led_red) | led_values;
@@ -147,14 +153,16 @@ alt_u32 alarm_handler(void* context)
 void VehicleTmrCallback (void *ptmr, void *callback_arg)
 {
   OSSemPost(VehicleTmrSem);
-  printf("OSSemPost(VehicleTmr);\n");
+  if (DEBUG) 
+    printf("OSSemPost(VehicleTmr);\n");
 }
 void ControlTmrCallback (void *ptmr, void *callback_arg)
 {
   OSSemPost(ControlTmrSem);
   OSSemPost(ButtonTmrSem);  // Same period, we don't need others timers 
   OSSemPost(SwitchTmrSem);  // Same period, we don't need others timers
-  printf("OSSemPost(ControlTmr);\n");
+  if (DEBUG) 
+    printf("OSSemPost(ControlTmr);\n");
 }
 
 static int b2sLUT[] = 
@@ -223,17 +231,6 @@ void show_target_velocity(INT8U target_vel)
   int out;
   INT8U out_high = 0;
   INT8U out_low = 0;
-  // INT8U out_sign = 0;
-
-  // if(velocity < 0)
-  // {
-  //   out_sign = int2seven(10);
-  //   tmp *= -1;
-  // }
-  // else
-  // {
-  //   out_sign = int2seven(0);
-  // }
 
   out_high = int2seven(tmp / 10);
   out_low  = int2seven(tmp - (tmp/10) * 10);
@@ -247,12 +244,6 @@ void show_target_velocity(INT8U target_vel)
 
 /*
  * indicates the position of the vehicle on the track with the four leftmost red LEDs
- * LEDR17: [0m, 400m)
- * LEDR16: [400m, 800m)
- * LEDR15: [800m, 1200m)
- * LEDR14: [1200m, 1600m)
- * LEDR13: [1600m, 2000m)
- * LEDR12: [2000m, 2400m]
  */
 
 void show_position(INT16U position)
@@ -337,7 +328,7 @@ void VehicleTask(void* pdata)
   INT16U position = 0; 
   INT16S velocity = 0; 
   INT16S wind_factor;   
-  // enum active brake_pedal = off;
+  // enum active brake_pedal = off; // It created a conflict with the global variable
 
   printf("Vehicle task created!\n");
 
@@ -414,6 +405,7 @@ void ControlTask(void* pdata)
   INT16S* cruise_velocity;
   *cruise_velocity  = 0;
   *current_velocity = 0;
+
   // Store imputs from the swetches;
   int gas_pedal_tmp=0;
   int top_gear_tmp=0;
@@ -432,9 +424,12 @@ void ControlTask(void* pdata)
       if (err == OS_NO_ERR)
         cruise_velocity = (INT16S*) msg;
       
-      printf("CRUISE VELOCITY: %d \n", *cruise_velocity);
-      printf("CURRENT VELOCITY: %d \n", *current_velocity);
-      
+      if (DEBUG) 
+      {
+        printf("CRUISE VELOCITY: %d \n", *cruise_velocity);
+        printf("CURRENT VELOCITY: %d \n", *current_velocity);
+      }
+
       // Use green led to indicate cruise is on
       change_GREEN_led_status(0x1, (cruise_control == on)*0xff & LED_GREEN_0);
 
@@ -446,33 +441,34 @@ void ControlTask(void* pdata)
         cruise_control == off;
         show_target_velocity(0);
         
+        if ( *current_velocity ~= 0 )
+        {
+          engine = on;     
+          change_RED_led_status(led_interested, LED_RED_0);
+        }
       }
 
       if (cruise_control == on)
       {
-        printf("hey \n");
         show_target_velocity(*cruise_velocity);
         
+        // Basic proportional control
         if( (*cruise_velocity - *current_velocity) > 4 )
-        {
           throttle = throttle + 10;
-        }
         if( (*cruise_velocity - *current_velocity) < 4 )
-        {
           throttle = throttle - 10;
-        }
-
-      }else if(gas_pedal == on)
-      {
-        throttle = 80;
       }
-      else{
+
+      // acceleratio -> increase power
+      else if(gas_pedal == on)
+        throttle = 80;
+      // when the engine is on the car have a certain power
+      else if(engine == on){ 
         throttle = 40; 
       }
 
       err = OSMboxPost(Mbox_Throttle, (void *) &throttle);
       
-      // OSTimeDlyHMSM(0,0,0, CONTROL_PERIOD);
       OSSemPend(ControlTmrSem, 0, &err);
     }
 }
@@ -501,63 +497,52 @@ void ButtonIOTask(void* pdata)
     msg = OSMboxPend(Mbox_Velocity_BUTTON, 0, &err);
     current_velocity = (INT16S*) msg;
 
-    // err = OSMboxPost(Mbox_Gas, button_register & GAS_PEDAL_FLAG? on : off);
-    // err = OSMboxPost(Mbox_Cruise,button_register & CRUISE_CONTROL_FLAG? on : off);
-    // err = OSMboxPost(Mbox_Brake, button_register & BRAKE_PEDAL_FLAG? on : off);
-
-      switch (ButtonState)
+    switch (ButtonState)
       {
         case CRUISE_CONTROL_FLAG:   // Key1 is pressed
 
           if(top_gear == on && *current_velocity >= 25)
           {
-            
-            printf( "CRUISE_CONTROL_FLAG \n");
+            if (DEBUG) 
+              printf( "CRUISE_CONTROL_FLAG \n");
+
             cruise_control = on;    // start cruise control 
-            
             int cruise_velocity = *current_velocity;
 
-            printf("Cuise SEND 1: %d", cruise_velocity);
+            // Send the cruise velocity to the control task
             err = OSMboxPost(Mbox_Cruise, (void *) &cruise_velocity);
 
-            //err = OSMboxPost(Mbox_Cruise_DISP, (void *) &current_velocity);
-            
-            //IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_GREENLED9_BASE, LED_GREEN_2);
-            
             change_GREEN_led_status(0x7E, LED_GREEN_2);
-            
           }
 
         break;
         case BRAKE_PEDAL_FLAG:      // Key2 is pressed
-          
-            printf( "BRAKE_PEDAL_FLAG \n");
+            if (DEBUG)
+              printf( "BRAKE_PEDAL_FLAG \n");
+
             brake_pedal = on;       // start brake    
             cruise_control = off;   // cruise off   
-            // IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_GREENLED9_BASE, LED_GREEN_4); 
+
             change_GREEN_led_status(0x7E, LED_GREEN_4);
         break;
         case GAS_PEDAL_FLAG:        // Key3 is pressed
-            printf( "GAS_PEDAL_FLAG \n");
+            if (DEBUG)
+              printf( "GAS_PEDAL_FLAG \n");
+
             gas_pedal = on;               // start gas      
             cruise_control = off;   // cruise off
             
-            // IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_GREENLED9_BASE, LED_GREEN_6); 
-
             change_GREEN_led_status(0x7E, LED_GREEN_6);
         break;
         default:
           gas_pedal   = off;
           brake_pedal = off;
           if(cruise_control == on)
-          {
             change_GREEN_led_status(0x7E, LED_GREEN_0);
-          }
           else
-          {
             change_GREEN_led_status(0x7E, NULL);
-          }
           
+          if (DEBUG)
             printf("Default state: led, cruise, break, gas remain equals \n");
         break;
       }
@@ -570,9 +555,10 @@ void SwitchIOTask(void* pdata)
 {
   int SwitchState;
   INT8U err;
-  printf ("SwitchIO Task created!\n");
   INT32U led_interested = 0x3;
-   while (1)
+  printf ("SwitchIO Task created!\n");
+  
+  while (1)
    {
       SwitchState = (~SwitchState) & 0xf;
       SwitchState = switches_pressed(); // 1,2,3 considering how many switches are on
@@ -580,38 +566,34 @@ void SwitchIOTask(void* pdata)
       switch (SwitchState)
       {
         case ENGINE_FLAG:                // Switch0 is pressed
+          if (DEBUG)
+            printf ("ENGINE_FLAG \n");
           
-          printf ("ENGINE_FLAG \n");
           engine = on;                   // engine on 
           cruise_control = off;
-          // led_red = LED_RED_0;
-          change_RED_led_status(led_interested, LED_RED_0);
-          //IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_0);
-          // change_GREEN_led_status(0x1, NULL);
 
+          change_RED_led_status(led_interested, LED_RED_0);
+          
         break;
         case TOP_GEAR_FLAG:             // Switch1 is pressed
-
-          printf ("TOP_GEAR_FLAG \n");
+          if (DEBUG)
+            printf ("TOP_GEAR_FLAG \n");
+          
           top_gear = on;      
-          // change_RED_led_status(0x2, LED_RED_1);
-          // led_red = LED_RED_1;
+          
           change_RED_led_status(led_interested, LED_RED_1);
   
-          //IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_1);    
-
         break;
         case TOP_GEAR_FLAG+ENGINE_FLAG:             // Switch1 is pressed
 
-          printf ("TOP_GEAR_FLAG + ENGINE_FLAG \n");
+          if (DEBUG)
+            printf ("TOP_GEAR_FLAG + ENGINE_FLAG \n");
+          
           top_gear = on;
           engine = on;         
           
-          // led_red = LED_RED_1 + LED_RED_0;
           change_RED_led_status(led_interested, LED_RED_1 + LED_RED_0);
-
-          //IOWR_ALTERA_AVALON_PIO_DATA(DE2_PIO_REDLED18_BASE, LED_RED_1 + LED_RED_0);    
-           
+ 
         break;
         default:
           
@@ -621,17 +603,12 @@ void SwitchIOTask(void* pdata)
           cruise_control = off;
 
           change_RED_led_status(led_interested, NULL);
-
-          printf("Default state: engine, top_gear off \n");
+          
+          if (DEBUG)
+            printf("Default state: engine, top_gear off \n");
 
         break;
       }
-
-      //int led_value = ((SwitchState & ENGINE_FLAG ) > 0 )*0xff & LED_RED_0
-      //                | ((SwitchState & TOP_GEAR_FLAG ) > 0 )*0xff & LED_RED_1;
-//
-      //change_RED_led_status(0x3, led_value);
-
      OSSemPend(SwitchTmrSem, 0, &err);
    }
 }
@@ -741,11 +718,11 @@ void StartTask(void* pdata)
   Mbox_Velocity = OSMboxCreate((void*) 0); /* Empty Mailbox - Velocity */
   Mbox_Brake    = OSMboxCreate((void*) 0); /* Empty Mailbox - Brake */
   Mbox_Cruise   = OSMboxCreate((void*) 0); /* Empty Mailbox - Cruise */
-  //Mbox_Cruise_DISP = OSMboxCreate((void*) 0);
   Mbox_Velocity_BUTTON = OSMboxCreate((void*) 0);
   Mbox_Gas = OSMboxCreate((void*) 0);
   Mbox_Gear = OSMboxCreate((void*) 0); /* Empty Mailbox -  Gear*/
   Mbox_Engine = OSMboxCreate((void*) 0); 
+
   /*
     * Create statistics task
   */
