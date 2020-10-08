@@ -52,8 +52,8 @@ OS_STK VehicleTask_Stack[TASK_STACKSIZE];
 OS_STK ButtonIO_Stack[TASK_STACKSIZE];
 OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 
-OS_STK Watchdog_Stack[TASK_STACKSIZE];
-OS_STK Overload_Stack[TASK_STACKSIZE];
+      OS_STK Watchdog_Stack[TASK_STACKSIZE];
+      OS_STK Overload_Stack[TASK_STACKSIZE];
 
 // Task Priorities
  
@@ -63,8 +63,8 @@ OS_STK Overload_Stack[TASK_STACKSIZE];
 #define BUTTONIOTASK_PRIO  13
 #define SWITCHIOTASK_PRIO  14
 
-#define WATCHDOG_PRIO  13
-#define OVERLOAD_PRIO  14
+      #define WATCHDOG_PRIO  15
+      #define OVERLOAD_PRIO  16
 
 // Task Periods
 
@@ -76,6 +76,7 @@ OS_STK Overload_Stack[TASK_STACKSIZE];
 */
 
 // Mailboxes
+
 OS_EVENT *Mbox_Throttle;
 OS_EVENT *Mbox_Velocity;
 OS_EVENT *Mbox_Brake;
@@ -87,6 +88,9 @@ OS_EVENT *VehicleTmrSem;
 OS_EVENT *ControlTmrSem;
 OS_EVENT *ButtonTmrSem;
 OS_EVENT *SwitchTmrSem;
+
+      OS_EVENT *WatchdogTmrSem;
+      OS_EVENT *OverloadTmrSem;
 
 // SW-Timer
 
@@ -112,6 +116,8 @@ enum active cruise_control = off;
 int delay; // Delay of HW-timer 
 INT16U led_green = 0; // Green LEDs
 INT32U led_red = 0;   // Red LEDs
+
+int overload_signal = 0; //signal send by the overload
 
 int buttons_pressed(void)
 {
@@ -447,7 +453,7 @@ void ButtonIOTask(void* pdata)
   {
 
       ButtonState = buttons_pressed();
-      ButtonState = ButtonState & 0xf; // TRANSFORM IN 8 BIT LONG
+      ButtonState = ButtonState & 0xf; // mask
       
       msg = OSMboxPend(Mbox_Velocity, 0, &err);
       current_velocity = (INT16S*) msg;
@@ -609,6 +615,17 @@ void StartTask(void* pdata)
       printf("ControlTmr created\n");
     }
    }
+
+
+
+
+
+
+
+
+
+
+
 
   /* 
    * Start Software Timers

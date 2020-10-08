@@ -59,6 +59,7 @@ OS_STK SwitchIO_Stack[TASK_STACKSIZE];
 */
 
 // Mailboxes
+
 OS_EVENT *Mbox_Throttle;
 OS_EVENT *Mbox_Velocity;
 OS_EVENT *Mbox_Brake;
