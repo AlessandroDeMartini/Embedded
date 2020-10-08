@@ -88,6 +88,8 @@ OS_EVENT *Mbox_Brake;
 OS_EVENT *Mbox_Cruise;
 OS_EVENT *Mbox_Velocity_BUTTON;
 
+OS_EVENT *Mbox_Reset;
+
 OS_EVENT *Mbox_Engine;
 OS_EVENT *Mbox_Gear;
 OS_EVENT *Mbox_Gas;
@@ -672,7 +674,7 @@ void OverloadTask(void *pdata)
 void WatchdogTask(void *pdata)     
 {
     INT8U err;
-    printf("Watchdog created \n");  //Debug print
+    printf("Watchdog created \n");
     while(1)
     {
       if(overload_signal == 1)
@@ -684,12 +686,54 @@ void WatchdogTask(void *pdata)
       else
       {
         printf("WARNING! Overload detected \n");
-        //check_signal = 0;
+        err = OSMboxPost(Mbox_Reset, 1);
       }
     OSSemPend(WatchdogTaskTimerSem, 0, &err);
     }
 }
 
+void ExtraloadTask(void *pdata)     
+{
+  INT8U err;
+  int SwitchState;
+  printf("ExtraloadTask created \n");
+
+  INT32U led_interested = 0x3F0;  // 000000001111110000
+
+  long double micro_sec_time;
+  int clock_cycles;
+  void* overload_message;
+
+  while(1)
+  {
+    SwitchState = (~SwitchState) & 0xf;
+    SwitchState = switches_pressed();
+
+    // Compute the value of the utilization
+    int utilization_value = (SwitchState & led_interested) >> 4;
+    utilization_value = 2*utilization_value;
+    
+    if(utilization_value> 100)
+      utilization_value = 100;
+
+    printf("utilization is %d \n", utilization_value);
+
+    //Delay of a percentage of the control period to simulate an extra load
+    PERF_RESET( PERFORMANCE_COUNTER_BASE );
+    PERF_START_MEASURING( PERFORMANCE_COUNTER_BASE );
+    do{
+      clock_cycles= perf_get_total_time( (void *) PERFORMANCE_COUNTER_BASE );
+
+      micro_sec_time = (long double) clock_cycles/ 50 ;
+      overload_message = OSMboxAccept(Mbox_Reset);
+    }
+    while(micro_sec_time/1000 < utilization_value/100*CONTROL_PERIOD && overload_message == (void *)0 );
+    
+    PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE );
+
+    OSSemPend(ExtraLoadTaskTimerSem, 0, &err);
+  }
+}
 /* 
  * The task 'StartTask' creates all other tasks kernel objects and
  * deletes itself afterwards.
@@ -820,11 +864,12 @@ void StartTask(void* pdata)
   Mbox_Velocity = OSMboxCreate((void*) 0); /* Empty Mailbox - Velocity */
   Mbox_Brake    = OSMboxCreate((void*) 0); /* Empty Mailbox - Brake */
   Mbox_Cruise   = OSMboxCreate((void*) 0); /* Empty Mailbox - Cruise */
+  Mbox_Gas      = OSMboxCreate((void*) 0);
+  Mbox_Gear     = OSMboxCreate((void*) 0); /* Empty Mailbox -  Gear*/
+  Mbox_Engine   = OSMboxCreate((void*) 0); 
+  Mbox_Reset    = OSMboxCreate((void*) 0); 
   Mbox_Velocity_BUTTON = OSMboxCreate((void*) 0);
-  Mbox_Gas = OSMboxCreate((void*) 0);
-  Mbox_Gear = OSMboxCreate((void*) 0); /* Empty Mailbox -  Gear*/
-  Mbox_Engine = OSMboxCreate((void*) 0); 
-
+  
   /*
     * Create statistics task
   */
