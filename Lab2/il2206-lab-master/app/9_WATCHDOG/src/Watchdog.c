@@ -191,6 +191,7 @@ void ControlTmrCallback (void *ptmr, void *callback_arg)
 
 void resetOverloadCallback  (void* ptmr, void* callback_arg)
 {
+  INT8U err;
   // if(check_signal == 1)
   //      check_signal = 0;
   // else
@@ -420,7 +421,7 @@ void VehicleTask(void* pdata)
       printf("Throttle: %d V\n", *throttle);
 
       // position = position + velocity * VEHICLE_PERIOD / 1000;
-      //velocity = velocity  + acceleration * VEHICLE_PERIOD / 1000.0;
+      // velocity = velocity  + acceleration * VEHICLE_PERIOD / 1000.0;
       
       // if(position > 2400)
       //   position = 0;
@@ -496,9 +497,9 @@ void ControlTask(void* pdata)
         show_target_velocity(*cruise_velocity);
         
         // Basic proportional control
-        if( (*cruise_velocity - *current_velocity) > 4 )
-          throttle = throttle + 15;
-        if( (*cruise_velocity - *current_velocity) < 4 )
+        if( (*cruise_velocity - *current_velocity) > 2 )
+          throttle = throttle + 10;
+        if( (*cruise_velocity - *current_velocity) < 2 )
           throttle = throttle - 15;
       }
 
