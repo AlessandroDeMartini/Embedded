@@ -48,22 +48,26 @@
 OS_STK StartTask_Stack[TASK_STACKSIZE]; 
 OS_STK ControlTask_Stack[TASK_STACKSIZE]; 
 OS_STK VehicleTask_Stack[TASK_STACKSIZE];
+
 OS_STK ButtonIO_Stack[TASK_STACKSIZE];
 OS_STK SwitchIO_Stack[TASK_STACKSIZE];
+
 OS_STK Watchdog_Stack[TASK_STACKSIZE];
 OS_STK Overload_Stack[TASK_STACKSIZE];
 OS_STK Extraload_Stack[TASK_STACKSIZE];
 
 // Task Priorities
 
-#define STARTTASK_PRIO       5
-#define WATCHDOGTASK_PRIO    9    //high priority low number
-#define VEHICLETASK_PRIO    10
-#define CONTROLTASK_PRIO    12
-#define BUTTONIOTASK_PRIO   13
-#define SWITCHIOTASK_PRIO   14
-#define OVERLOADTASK_PRIO   10    //low priority high number
-#define EXTRALOADTASK_PRIO  16    //low priority high number
+#define STARTTASK_PRIO      2
+#define WATCHDOGTASK_PRIO   4    //high priority low number
+#define VEHICLETASK_PRIO    6
+#define CONTROLTASK_PRIO   12
+
+#define BUTTONIOTASK_PRIO   8
+#define SWITCHIOTASK_PRIO   7
+
+#define OVERLOADTASK_PRIO  10    //low priority high number
+#define EXTRALOADTASK_PRIO 16    //low priority high number
 
 // Task Periods
 
@@ -96,6 +100,10 @@ OS_EVENT *VehicleTmrSem;
 OS_EVENT *ControlTmrSem;
 OS_EVENT *ButtonTmrSem;
 OS_EVENT *SwitchTmrSem;
+
+OS_EVENT *OverloadDetectionTaskTimerSem;
+OS_EVENT *WatchdogTaskTimerSem;
+OS_EVENT *ExtraLoadTaskTimerSem;
 
 // SW-Timer
 
@@ -182,14 +190,23 @@ void ControlTmrCallback (void *ptmr, void *callback_arg)
 
 void resetOverloadCallback  (void* ptmr, void* callback_arg)
 {
-       if(check_signal == 1)
-       {
-            check_signal = 0;
-       }
-       else
-       {
-            overload_signal = 2;
-       }
+  if(check_signal == 1)
+  {
+       check_signal = 0;
+  }
+  else
+  {
+       overload_signal = 2;
+  }
+
+  OSSemPost(WatchdogTaskTimerSem);
+
+  OSSemSet(OverloadDetectionTaskTimerSem,0,&err); // Reset if there was no Pend in the Past HyperPeriod
+  OSSemPost(OverloadDetectionTaskTimerSem)
+  
+  OSSemSet(ExtraLoadTaskTimerSem,0,&err);
+  OSSemPost(ExtraLoadTaskTimerSem);
+
 }
 
 static int b2sLUT[] = 
@@ -650,7 +667,7 @@ void OverloadTask(void *pdata)
       {
        overload_signal = 1; 
       }
-      OSSemPend(VehicleTmrSem, 0, &err);
+      OSSemPend(OverloadDetectionTaskTimerSem, 0, &err);
     }
 }
 
@@ -672,7 +689,7 @@ void WatchdogTask(void *pdata)
         printf("WARNING! WARNING!WARNING!WARNING! \n");
         check_signal = 0;
       }
-    OSSemPend(ButtonTmrSem, 0, &err);
+    OSSemPend(WatchdogTaskTimerSem, 0, &err);
     }
 }
 
@@ -797,6 +814,9 @@ void StartTask(void* pdata)
   ControlTmrSem = OSSemCreate(0); 
   ButtonTmrSem  = OSSemCreate(0);
   SwitchTmrSem  = OSSemCreate(0);
+  OverloadDetectionTaskTimerSem = OSSemCreate(0);
+  WatchdogTaskTimerSem = OSSemCreate(0);
+  ExtraLoadTaskTimerSem = OSSemCreate(0);
 
   // Mailboxes
   Mbox_Throttle = OSMboxCreate((void*) 0); /* Empty Mailbox - Throttle */
