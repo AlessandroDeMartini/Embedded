@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <string.h>
+#include <inttypes.h> //printf with32u
 #include "system.h"
 #include "includes.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_avalon_performance_counter.h" 
 #include "sys/alt_irq.h"
 #include "sys/alt_alarm.h"
 #include "sys/alt_timestamp.h"
@@ -61,13 +64,13 @@ OS_STK Extraload_Stack[TASK_STACKSIZE];
 #define STARTTASK_PRIO      2
 #define WATCHDOGTASK_PRIO   4    //high priority low number
 #define VEHICLETASK_PRIO    6
-#define CONTROLTASK_PRIO   12
+#define CONTROLTASK_PRIO    12
 
 #define BUTTONIOTASK_PRIO   8
 #define SWITCHIOTASK_PRIO   7
 
-#define OVERLOADTASK_PRIO  10    //low priority high number
-#define EXTRALOADTASK_PRIO 16    //low priority high number
+#define OVERLOADTASK_PRIO  16    //low priority high number
+#define EXTRALOADTASK_PRIO 13    //low priority high number
 
 // Task Periods
 
@@ -132,7 +135,7 @@ int delay; // Delay of HW-timer
 INT16U led_green = 0; // Green LEDs
 INT32U led_red = 0;   // Red LEDs
 
-int overload_signal = 0; //signal send by the overload
+int overload_signal = 1; //signal send by the overload
 //int check_signal = 0;     //signal send by the overload
 
 int buttons_pressed(void)
@@ -606,7 +609,7 @@ void SwitchIOTask(void* pdata)
    {
       SwitchState = (~SwitchState) & 0xf;
       SwitchState = switches_pressed(); // 1,2,3 considering how many switches are on
-
+      SwitchState = SwitchState & 0x3;
       switch (SwitchState)
       {
         case ENGINE_FLAG:                // Switch0 is pressed
@@ -678,18 +681,15 @@ void WatchdogTask(void *pdata)
     printf("Watchdog created \n");
     while(1)
     {
-      if(overload_signal == 1)
-      {
-        overload_signal = 0;
-        printf("SIGNAL OVERLOAD ARRIVED, OK \n");
-        // check_signal = 1;
-      }
-      else
+      if(overload_signal == 0)
       {
         printf("WARNING! Overload detected \n");
         err = OSMboxPost(Mbox_Reset, 1);
       }
-    OSSemPend(WatchdogTaskTimerSem, 0, &err);
+      
+      overload_signal = 0;
+      printf("SIGNAL OVERLOAD ARRIVED, OK \n");
+      OSSemPend(WatchdogTaskTimerSem, 0, &err);
     }
 }
 
@@ -699,7 +699,7 @@ void ExtraloadTask(void *pdata)
   int SwitchState;
   printf("ExtraloadTask created \n");
 
-  INT32U led_interested = 0x3F0;  // 000000001111110000
+  INT32U switch_interested = 0x3F0;  // 000000001111110000
 
   long double micro_sec_time;
   int clock_cycles;
@@ -711,7 +711,7 @@ void ExtraloadTask(void *pdata)
     SwitchState = switches_pressed();
 
     // Compute the value of the utilization
-    int utilization_value = (SwitchState & led_interested) >> 4;
+    int utilization_value = (SwitchState & switch_interested) >> 4;
     utilization_value = 2*utilization_value;
     
     if(utilization_value> 100)
@@ -724,12 +724,14 @@ void ExtraloadTask(void *pdata)
     PERF_START_MEASURING( PERFORMANCE_COUNTER_BASE );
     do{
       clock_cycles= perf_get_total_time( (void *) PERFORMANCE_COUNTER_BASE );
-
       micro_sec_time = (long double) clock_cycles/ 50 ;
       overload_message = OSMboxAccept(Mbox_Reset);
+      //printf("Doing utilization %d\n", utilization_value );
+      //printf("Overload message %d\n", (int *) overload_message );
     }
     while(micro_sec_time/1000 < utilization_value/100*CONTROL_PERIOD && overload_message == (void *)0 );
     
+    printf("fine \n");
     PERF_STOP_MEASURING( PERFORMANCE_COUNTER_BASE );
 
     OSSemPend(ExtraLoadTaskTimerSem, 0, &err);
@@ -956,6 +958,19 @@ void StartTask(void* pdata)
       WATCHDOGTASK_PRIO,
       WATCHDOGTASK_PRIO,
       (void *)&Watchdog_Stack[0],
+      TASK_STACKSIZE,
+      (void *) 0,
+      OS_TASK_OPT_STK_CHK);
+
+  err = OSTaskCreateExt(
+      ExtraloadTask, // Pointer to task code
+      NULL,        // Pointer to argument that is
+      // passed to task
+      &Extraload_Stack[TASK_STACKSIZE-1], // Pointer to top
+      // of task stack
+      EXTRALOADTASK_PRIO,
+      EXTRALOADTASK_PRIO,
+      (void *)&Extraload_Stack[0],
       TASK_STACKSIZE,
       (void *) 0,
       OS_TASK_OPT_STK_CHK);
