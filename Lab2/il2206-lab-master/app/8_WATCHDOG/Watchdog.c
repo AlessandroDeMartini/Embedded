@@ -682,18 +682,15 @@ void WatchdogTask(void *pdata)
 
     while(1)
     {
-      if(overload_signal == 1)
-      {
-        overload_signal = 0;
-        printf("SIGNAL OVERLOAD ARRIVED, OK \n");
-        // check_signal = 1;
-      }
-      else
+      if(overload_signal == 0)
       {
         printf("WARNING! Overload detected \n");
         err = OSMboxPost(Mbox_Reset, 1);
       }
-    OSSemPend(WatchdogTaskTimerSem, 0, &err);
+      overload_signal = 0;
+      printf("Watchdog working\n");
+
+      OSSemPend(WatchdogTaskTimerSem, 0, &err);
     }
 }
 

@@ -432,9 +432,6 @@ void ControlTask(void* pdata)
 
       // Use green led to indicate cruise is on
       change_GREEN_led_status(0x1, (cruise_control == on)*0xff & LED_GREEN_0);
-
-      // Se ho il cruise attivo prendo la velocità desiderata che rimane fissa a +- 4m/s
-      
       
       if(*current_velocity < 25 || cruise_control == off)
       {
