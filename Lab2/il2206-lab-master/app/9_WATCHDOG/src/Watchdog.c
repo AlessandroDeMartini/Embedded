@@ -73,8 +73,7 @@ OS_STK Extraload_Stack[TASK_STACKSIZE];
 
 #define CONTROL_PERIOD   300
 #define VEHICLE_PERIOD   300
-#define OVERLOAD_PERIOD  1000000
-
+#define OVERLOAD_PERIOD  300
 
 /*
  * Definition of Kernel Objects 
@@ -132,7 +131,7 @@ INT16U led_green = 0; // Green LEDs
 INT32U led_red = 0;   // Red LEDs
 
 int overload_signal = 0; //signal send by the overload
-int check_signal = 0;     //signal send by the overload
+//int check_signal = 0;     //signal send by the overload
 
 int buttons_pressed(void)
 {
@@ -190,20 +189,18 @@ void ControlTmrCallback (void *ptmr, void *callback_arg)
 
 void resetOverloadCallback  (void* ptmr, void* callback_arg)
 {
-  if(check_signal == 1)
-  {
-       check_signal = 0;
-  }
-  else
-  {
-       overload_signal = 2;
-  }
+  // if(check_signal == 1)
+  //      check_signal = 0;
+  // else
+  //      overload_signal = 2;
 
   OSSemPost(WatchdogTaskTimerSem);
 
-  OSSemSet(OverloadDetectionTaskTimerSem,0,&err); // Reset if there was no Pend in the Past HyperPeriod
-  OSSemPost(OverloadDetectionTaskTimerSem)
+  // Reset if there was no Pend in the Past HyperPeriod
+  OSSemSet(OverloadDetectionTaskTimerSem,0,&err); 
+  OSSemPost(OverloadDetectionTaskTimerSem);
   
+  // Reset if there was no Pend in the Past HyperPeriod
   OSSemSet(ExtraLoadTaskTimerSem,0,&err);
   OSSemPost(ExtraLoadTaskTimerSem);
 
@@ -661,12 +658,13 @@ void OverloadTask(void *pdata)
 {
     INT8U err;
     printf("Overload created \n");  //Debug print
+
     while(1)
     {
-      if (check_signal == 0)
-      {
-       overload_signal = 1; 
-      }
+      //if (check_signal == 0)
+      //{
+      overload_signal = 1; 
+      //}
       OSSemPend(OverloadDetectionTaskTimerSem, 0, &err);
     }
 }
@@ -680,14 +678,13 @@ void WatchdogTask(void *pdata)
       if(overload_signal == 1)
       {
         overload_signal = 0;
-        printf("SIGNAL OVERLOAD ARRIVED SIGNAL OVERLOAD ARRIVED \n");
-        check_signal = 1;
+        printf("SIGNAL OVERLOAD ARRIVED, OK \n");
+        // check_signal = 1;
       }
-      else if (overload_signal == 2)
+      else
       {
-        overload_signal = 0;
-        printf("WARNING! WARNING!WARNING!WARNING! \n");
-        check_signal = 0;
+        printf("WARNING! Overload detected \n");
+        //check_signal = 0;
       }
     OSSemPend(WatchdogTaskTimerSem, 0, &err);
     }
@@ -764,7 +761,7 @@ void StartTask(void* pdata)
                               OS_TMR_OPT_PERIODIC,        
                               resetOverloadCallback ,              // OS_TMR_CALLBACK
                               (void *)0,                  
-                              NULL,                       
+                              "OverloadTmr",                       
                               &err);
                         
   /* 
