@@ -441,11 +441,12 @@ void ControlTask(void* pdata)
         cruise_control == off;
         show_target_velocity(0);
         
-        if ( *current_velocity ~= 0 )
-        {
-          engine = on;     
-          change_RED_led_status(led_interested, LED_RED_0);
+        if (engine == off && *current_velocity != 0 ){
+          engine = on; 
+          change_RED_led_status(0x1, LED_RED_0);       
         }
+        
+             
       }
 
       if (cruise_control == on)
@@ -541,7 +542,7 @@ void ButtonIOTask(void* pdata)
             change_GREEN_led_status(0x7E, LED_GREEN_0);
           else
             change_GREEN_led_status(0x7E, NULL);
-          
+
           if (DEBUG)
             printf("Default state: led, cruise, break, gas remain equals \n");
         break;
@@ -601,7 +602,7 @@ void SwitchIOTask(void* pdata)
 
           top_gear = off;
           cruise_control = off;
-
+            
           change_RED_led_status(led_interested, NULL);
           
           if (DEBUG)
