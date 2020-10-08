@@ -57,19 +57,19 @@ OS_STK Extraload_Stack[TASK_STACKSIZE];
 // Task Priorities
 
 #define STARTTASK_PRIO       5
-#define WATCHDOGTASK_PRIO    6    //high priority low number
+#define WATCHDOGTASK_PRIO    9    //high priority low number
 #define VEHICLETASK_PRIO    10
 #define CONTROLTASK_PRIO    12
 #define BUTTONIOTASK_PRIO   13
 #define SWITCHIOTASK_PRIO   14
-#define OVERLOADTASK_PRIO   15    //low priority high number
+#define OVERLOADTASK_PRIO   10    //low priority high number
 #define EXTRALOADTASK_PRIO  16    //low priority high number
 
 // Task Periods
 
 #define CONTROL_PERIOD   300
 #define VEHICLE_PERIOD   300
-#define OVERLOAD_PERIOD  600
+#define OVERLOAD_PERIOD  1000000
 
 
 /*
@@ -468,10 +468,10 @@ void ControlTask(void* pdata)
         cruise_control == off;
         show_target_velocity(0);
         
-        if ( *current_velocity ~= 0 )
+        if ( *current_velocity != 0 )
         {
           engine = on;     
-          change_RED_led_status(led_interested, LED_RED_0);
+          //change_RED_led_status(led_interested, LED_RED_0);
         }
       }
 
@@ -481,9 +481,9 @@ void ControlTask(void* pdata)
         
         // Basic proportional control
         if( (*cruise_velocity - *current_velocity) > 4 )
-          throttle = throttle + 10;
+          throttle = throttle + 15;
         if( (*cruise_velocity - *current_velocity) < 4 )
-          throttle = throttle - 10;
+          throttle = throttle - 15;
       }
 
       // acceleratio -> increase power
@@ -646,12 +646,12 @@ void OverloadTask(void *pdata)
     printf("Overload created \n");  //Debug print
     while(1)
     {
-  if (check_signal == 0)
-  {
-    signal = 1; 
-  }
+      if (check_signal == 0)
+      {
+       overload_signal = 1; 
+      }
+      OSSemPend(VehicleTmrSem, 0, &err);
     }
-    OSSemPend(ButtonTmrSem, 0, &err);
 }
 
 void WatchdogTask(void *pdata)     
@@ -660,20 +660,20 @@ void WatchdogTask(void *pdata)
     printf("Watchdog created \n");  //Debug print
     while(1)
     {
-  if(overload_signal == 1)
-  {
-    overload_signal = 0;
-    printf("Signal overload arrived \n");
-    check_signal = 1;
-  }
-  else if (overload_signal == 2)
-  {
-    overload_signal = 0;
-    printf("WARNING! \n");
-    check_signal = 0;
-  }
-    }
+      if(overload_signal == 1)
+      {
+        overload_signal = 0;
+        printf("SIGNAL OVERLOAD ARRIVED SIGNAL OVERLOAD ARRIVED \n");
+        check_signal = 1;
+      }
+      else if (overload_signal == 2)
+      {
+        overload_signal = 0;
+        printf("WARNING! WARNING!WARNING!WARNING! \n");
+        check_signal = 0;
+      }
     OSSemPend(ButtonTmrSem, 0, &err);
+    }
 }
 
 /* 
